@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer's Connect - Get Information About the Price and Location of Products Near You</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #3730a3;
+      --secondary: #38bdf8;
+      --bg-gradient: linear-gradient(135deg,#fcfcfb 0%,#dde8f9 100%);
+      --card-glass: rgba(255,255,255, 0.78);
+      --text: #232747;
+      --muted: #8796ad;
+      --shadow: 0 12px 30px rgba(99,102,241,0.12);
+      --radius: 22px;
+      --transition: 0.25s cubic-bezier(.75,.01,.24,1.0);
+      --glass-border: 1.8px solid #bfc6e0;
+    }
+    [data-theme='dark'] {
+      --bg-gradient: linear-gradient(135deg,#232747 0%, #344060 100%);
+      --card-glass: rgba(34,44,67, 0.88);
+      --text: #f1f3f8;
+      --muted: #bac2d7;
+      --shadow: 0 12px 30px rgba(99,102,241,0.3);
+      --glass-border: 1.8px solid #344060;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+      transition: background var(--transition), color var(--transition);
+      user-select: none;
+    }
+    .container {
+      background: var(--card-glass);
+      border-radius: var(--radius);
+      max-width: 900px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      display: flex;
+      overflow: hidden;
+      flex-wrap: wrap;
+      border: var(--glass-border);
+      backdrop-filter: blur(15px);
+      user-select: text;
+    }
+    .hero {
+      flex: 1 1 400px;
+      background: linear-gradient(135deg, var(--primary) 15%, var(--secondary) 90%);
+      color: white;
+      padding: 50px 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      border-radius: var(--radius) 0 0 var(--radius);
+      box-shadow: 0 12px 34px #6366f144;
+      user-select: none;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 18px;
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 38px;
+      opacity: 0.85;
+      font-weight: 500;
+      line-height: 1.3;
+      max-width: 420px;
+    }
+    .icon-map {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 25px;
+      fill: #a0d8f7cc;
+      filter: drop-shadow(0 0 8px #a0d8f7cc);
+      user-select: none;
+    }
+    .auth {
+      flex: 1 1 440px;
+      padding: 50px 42px 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--card-glass);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      border-left: var(--glass-border);
+      box-shadow: 0 8px 20px #6366f140 inset;
+      backdrop-filter: blur(18px);
+      user-select: text;
+    }
+    .toggle-buttons {
+      display: flex;
+      margin-bottom: 32px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.13);
+      border: var(--glass-border);
+      background: #dde3f8e3;
+      user-select: none;
+    }
+    .toggle-buttons button {
+      flex: 1;
+      padding: 16px 0;
+      font-size: 1.18rem;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      outline-offset: 2px;
+      outline-color: transparent;
+    }
+    .toggle-buttons button.active,
+    .toggle-buttons button:focus-visible {
+      background: linear-gradient(90deg, var(--primary) 50%, var(--secondary) 100%);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 5px 20px #6366f144;
+      outline-color: transparent;
+    }
+    form {
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.52s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    form.active {
+      display: flex;
+    }
+    label {
+      margin: 14px 0 8px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 1rem;
+      user-select: none;
+    }
+    input {
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      border: 2px solid #c2caea;
+      border-radius: 12px;
+      transition: border-color 0.28s ease, box-shadow 0.3s ease;
+      color: var(--primary-dark);
+      background: #f7f9ff;
+      font-weight: 500;
+      box-shadow: 0 1px 7px #6366f122 inset;
+      outline-offset: 2px;
+      user-select: text;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 12px #6366f1aa;
+      background: #e0e7ff;
+    }
+    button.submit-btn {
+      margin-top: 28px;
+      padding: 18px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(90deg,var(--primary) 50%, var(--secondary) 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 22px #6366f144;
+      transition: background-color 0.3s ease, box-shadow 0.22s ease;
+      user-select: none;
+      outline-offset: 3px;
+    }
+    button.submit-btn:hover,
+    button.submit-btn:focus-visible {
+      background: var(--primary-dark);
+      box-shadow: 0 8px 30px #3730a3cc;
+      outline: none;
+    }
+    .footer-text {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: var(--muted);
+      text-align: center;
+      user-select: none;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        max-width: 460px;
+        border-radius: var(--radius);
+      }
+      .hero, .auth {
+        flex: none;
+        width: 100%;
+        border-radius: var(--radius);
+        padding: 40px 30px;
+      }
+      .hero {
+        border-radius: var(--radius) var(--radius) 0 0;
+      }
+      .auth {
+        border-radius: 0 0 var(--radius) var(--radius);
+        border-left: none !important;
+        box-shadow: 0 14px 42px #6366f140 inset;
+      }
+      .hero h1 {
+        font-size: 2.4rem;
+      }
+      .toggle-buttons {
+        margin-bottom: 22px;
+      }
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(12px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Customer’s Connect Authentication">
+    <section class="hero" aria-label="Welcome section">
+      <svg class="icon-map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false" aria-label="Map icon">
+        <path d="M20.5 3l-5.5 2-5-2-6 2v16l6-2 5 2 5.5-2v-16zM12 17a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+      </svg>
+      <h1>Customer's Connect</h1>
+      <p>Trusted recommendations from customers around you — get advice from the customers themselves. Ask, share, and discover the best and cheapest places to shop.</p>
+    </section>
+    <section class="auth" aria-label="Authentication forms">
+      <div class="toggle-buttons" role="tablist" aria-label="Switch between login and sign up forms">
+        <button id="loginBtn" class="active" role="tab" aria-selected="true" aria-controls="loginForm" tabindex="0">Login</button>
+        <button id="signupBtn" role="tab" aria-selected="false" aria-controls="signupForm" tabindex="-1">Sign Up</button>
+      </div>
+
+      <form id="loginForm" class="active" role="tabpanel" aria-labelledby="loginBtn" novalidate>
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" name="email" placeholder="you@example.com" required autocomplete="username" aria-required="true" />
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password" aria-required="true" />
+        <button type="submit" class="submit-btn">Login</button>
+      </form>
+
+      <form id="signupForm" role="tabpanel" aria-labelledby="signupBtn" novalidate>
+        <label for="signupName">Full Name</label>
+        <input type="text" id="signupName" name="fullname" placeholder="Your full name" required autocomplete="name" aria-required="true" />
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" name="email" placeholder="you@example.com" required autocomplete="email" aria-required="true" />
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" name="password" placeholder="Create a password" required autocomplete="new-password" aria-required="true" />
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </form>
+
+      <p class="footer-text">Join the community and start discovering locations for the best products at lowest price around your school!</p>
+    </section>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    function activateLogin() {
+      loginBtn.classList.add('active');
+      signupBtn.classList.remove('active');
+      loginBtn.setAttribute('aria-selected', 'true');
+      signupBtn.setAttribute('aria-selected', 'false');
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+      loginBtn.tabIndex = 0;
+      signupBtn.tabIndex = -1;
+      loginForm.elements[0].focus();
+    }
+
+    function activateSignup() {
+      signupBtn.classList.add('active');
+      loginBtn.classList.remove('active');
+      signupBtn.setAttribute('aria-selected', 'true');
+      loginBtn.setAttribute('aria-selected', 'false');
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+      signupBtn.tabIndex = 0;
+      loginBtn.tabIndex = -1;
+      signupForm.elements[0].focus();
+    }
+
+    loginBtn.addEventListener('click', activateLogin);
+    signupBtn.addEventListener('click', activateSignup);
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if(!email || !password) {
+        alert('Please fill in all required login fields.');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (data.fullname && data.email) {
+          localStorage.setItem("fullname", data.fullname);
+          localStorage.setItem("email", data.email);
+          window.location.href = "dashboard.html";
+        } else {
+          alert(data.error || 'Login failed.');
+        }
+      } catch (error) {
+        alert('Login request failed. Please try again.');
+        console.error('Login error:', error);
+      }
+    });
+
+    signupForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const fullname = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+
+      if(!fullname || !email || !password) {
+        alert('Please fill in all required fields for sign up.');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullname, email, password })
+        });
+        const data = await response.json();
+        if(data.message) {
+          alert(data.message);
+          // Automatically switch to login after sign up success
+          if(!data.error) activateLogin();
+        } else {
+          alert(data.error || 'Signup failed.');
+        }
+      } catch(error) {
+        alert('Signup request failed. Please try again.');
+        console.error('Signup error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

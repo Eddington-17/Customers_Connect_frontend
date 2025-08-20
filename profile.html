@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Customer's Connect - User Profile</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #3730a3;
+    --secondary: #38bdf8;
+    --bg-gradient: linear-gradient(135deg,#fcfcfb 0%,#dde8f9 100%);
+    --card-glass: rgba(255,255,255, 0.78);
+    --text: #232747;
+    --muted: #8796ad;
+    --error: #ef4444;
+    --shadow: 0 6px 36px rgba(99,102,241,0.08);
+    --radius: 22px;
+    --transition: 0.25s cubic-bezier(.75,.01,.24,1.0);
+    --glass-border: 1.5px solid #bfc6e0;
+  }
+  [data-theme='dark'] {
+    --bg-gradient: linear-gradient(135deg,#232747 0%, #344060 100%);
+    --card-glass: rgba(34,44,67, 0.85);
+    --text: #f1f3f8;
+    --muted: #bac2d7;
+    --error: #f87171;
+    --glass-border: 1.5px solid #344060;
+    --shadow: 0 6px 36px rgba(99,102,241,0.32);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    user-select: none;
+  }
+  header {
+    background: var(--card-glass);
+    backdrop-filter: blur(10px);
+    border-bottom: var(--glass-border);
+    box-shadow: var(--shadow);
+    padding: 18px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius) var(--radius) 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 900;
+    color: var(--primary-dark);
+    font-size: 1.8rem;
+    user-select: text;
+  }
+  header nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header nav button, header nav a {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 3px 16px var(--primary-dark);
+    transition: background 0.3s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header nav button:hover,
+  header nav a:hover {
+    background: var(--primary-dark);
+    text-decoration: none;
+    color: white;
+  }
+  .dark-toggle {
+    background: var(--card-glass);
+    border: var(--glass-border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary);
+    box-shadow: 0 2px 6px #c7d2fe88;
+    transition: background var(--transition), color var(--transition), border var(--transition);
+    user-select: none;
+  }
+  .dark-toggle:hover {
+    color: var(--primary-dark);
+    background: var(--secondary);
+    border: 2px solid var(--primary);
+  }
+  main {
+    flex: 1;
+    max-width: 920px;
+    width: 100%;
+    margin: 36px auto;
+    padding: 0 24px 40px;
+    user-select: text;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+  .profile-container {
+    background: var(--card-glass);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(15px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  .profile-left {
+    flex: 1 1 300px;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .avatar-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 6px 18px #6366f144;
+    border: var(--glass-border);
+    background: #f0f4ff;
+    user-select: none;
+  }
+  #avatarPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    user-select: none;
+    pointer-events: none;
+  }
+  #avatarUpload {
+    display: none;
+  }
+  .upload-label {
+    margin-top: 12px;
+    color: var(--primary);
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.25s;
+  }
+  .upload-label:hover,
+  .upload-label:focus {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    outline-offset: 3px;
+    outline: 2px solid var(--primary-dark);
+  }
+  .profile-info h2 {
+    margin: 0 0 6px;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary-dark);
+    user-select: text;
+  }
+  .profile-info p.bio {
+    font-size: 1.06rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin: 4px 0 12px;
+    font-style: italic;
+    user-select: text;
+  }
+  .profile-info small {
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+    user-select: text;
+  }
+  .account-type-badge {
+    background: var(--secondary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .profile-info {
+    width: 100%;
+  }
+  .profile-stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .stat-item {
+    text-align: center;
+    user-select: text;
+  }
+  .stat-item strong {
+    display: block;
+    font-size: 1.8rem;
+    color: var(--primary);
+  }
+  .stat-item span {
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    user-select: none;
+  }
+  .badge {
+    background: var(--secondary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: default;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 8px #38bdf844;
+    transition: background 0.3s;
+  }
+  .badge.verified {
+    background: #22c55e;
+  }
+  .badge.helpful {
+    background: #eab308;
+  }
+  .badge.early {
+    background: #8b5cf6;
+  }
+  .badge:hover {
+    filter: brightness(0.9);
+  }
+  form.profile-edit {
+    max-width: 600px;
+    margin-top: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+  }
+  form.profile-edit.active {
+    display: flex;
+  }
+  form.profile-edit label {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--primary-dark);
+    user-select: none;
+  }
+  form.profile-edit input[type="text"],
+  form.profile-edit textarea,
+  form.profile-edit select {
+    padding: 12px 15px;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    border: 2px solid #bcd2f6;
+    transition: border-color 0.3s, box-shadow 0.25s;
+    font-weight: 500;
+    color: var(--primary-dark);
+    background: #f7fafc;
+    resize: vertical;
+    user-select: text;
+  }
+  form.profile-edit input[type="text"]:focus,
+  form.profile-edit textarea:focus,
+  form.profile-edit select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 14px #6366f144;
+    background: #e0e7ff;
+    outline-style: solid;
+    outline-offset: 4px;
+  }
+  form.profile-edit textarea {
+    min-height: 80px;
+    max-height: 140px;
+  }
+  .form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  .form-buttons button {
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 12px 28px;
+    border-radius: 14px;
+    cursor: pointer;
+    border: none;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  button.save-btn {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 5px 18px #3730a3cc;
+  }
+  button.save-btn:hover {
+    background: var(--primary-dark);
+  }
+  button.cancel-btn {
+    background: #e5e7eb;
+    color: var(--primary-dark);
+  }
+  button.cancel-btn:hover {
+    background: #c7d2fe;
+    color: var(--primary);
+  }
+  @media (max-width: 720px) {
+    .profile-container {
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 24px;
+    }
+    .profile-left {
+      max-width: 100%;
+    }
+    form.profile-edit {
+      max-width: 100%;
+    }
+    header {
+      padding: 14px 20px;
+      font-size: 1.1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Customer's Connect</h1>
+  <nav>
+    <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+    <a href="dashboard.html" aria-label="Back to Dashboard" role="link" tabindex="0">Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <section class="profile-container" aria-label="User Profile Section">
+
+    <aside class="profile-left">
+      <div class="avatar-wrapper" aria-label="User Avatar" role="img" aria-live="polite">
+        <img id="avatarPreview" src="" alt="User avatar" />
+        <input type="file" id="avatarUpload" accept="image/*" aria-label="Upload new avatar" />
+      </div>
+      <label for="avatarUpload" class="upload-label" tabindex="0" role="button" aria-describedby="avatarUploadDesc" aria-haspopup="dialog" aria-controls="avatarUpload">
+        Change Avatar
+      </label>
+      <span id="avatarUploadDesc" class="sr-only">Choose a file to change your profile picture</span>
+    </aside>
+
+    <section class="profile-right" style="flex:1 1 560px; max-width: 560px;">
+
+      <div class="profile-info" aria-live="polite">
+        <h2 id="displayName" tabindex="0">User Name</h2>
+        <p class="bio" id="displayBio">This is your bio or motto.</p>
+        <small id="displayDeptLevel">Department - Level</small>
+        <div id="displayAccountType" class="account-type-badge" aria-label="Account Type" role="region" tabindex="0"></div>
+      </div>
+
+      <div class="profile-stats" aria-label="User activity statistics">
+        <div class="stat-item">
+          <strong id="enquiriesCount">0</strong>
+          <span>Enquiries</span>
+        </div>
+        <div class="stat-item">
+          <strong id="repliesCount">0</strong>
+          <span>Replies</span>
+        </div>
+        <div class="stat-item">
+          <strong id="likesCount">0</strong>
+          <span>Likes Received</span>
+        </div>
+      </div>
+
+      <div class="badges-container" aria-label="Earned badges" role="list" aria-live="polite">
+        <!-- badges inserted dynamically -->
+      </div>
+
+      <button id="editProfileBtn" aria-expanded="false" aria-controls="profileEditForm"
+        style="margin-top:28px; font-weight:700; font-size:1.1rem; padding:12px 28px; border-radius:14px; border:none; background: var(--secondary); color:white; cursor:pointer; user-select:none;">
+        Edit Profile
+      </button>
+
+      <form id="profileEditForm" class="profile-edit" aria-hidden="true" novalidate>
+
+        <label for="inputFullName">Full Name</label>
+        <input type="text" id="inputFullName" name="fullname" required autocomplete="name" />
+
+        <label for="inputDepartment">Department</label>
+        <input type="text" id="inputDepartment" name="department" autocomplete="organization" />
+
+        <label for="inputLevel">Level</label>
+        <select id="inputLevel" name="level" >
+          <option value="">Select level</option>
+          <option value="100L">100 level</option>
+          <option value="200L">200 level</option>
+          <option value="300L">300 level</option>
+          <option value="400L">400 level</option>
+          <option value="500L">500 level</option>
+          <option value="600L">600 level</option>
+          <option value="700L">700 level</option>
+        </select>
+
+        <label for="inputBio">Bio / Motto</label>
+        <textarea id="inputBio" name="bio" rows="4" maxlength="200" placeholder="Write a short bio or motto..."></textarea>
+
+        <label for="inputAccountType">Account Type</label>
+        <select id="inputAccountType" name="accountType" required>
+          <option value="" disabled>Select account type</option>
+          <option value="verified_student_customer">Verified Student Customer</option>
+          <option value="verified_seller_account">Verified Seller Account</option>
+          <option value="verified_middle_man_account">Verified Middle Man Account</option>
+        </select>
+
+        <div class="form-buttons">
+          <button type="submit" class="save-btn">Save</button>
+          <button type="button" class="cancel-btn" id="cancelEditBtn">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </section>
+</main>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const BADGES = [
+    { id: 'helpful-hero', name: 'Helpful Hero', description: 'Multiple replies highly rated', icon: '🏅', class: 'helpful' },
+    { id: 'verified-student', name: 'Verified Student', description: 'Verified student via email domain', icon: '✔️', class: 'verified' },
+    { id: 'early-adopter', name: 'Early Adopter', description: 'Signed up early', icon: '🌟', class: 'early' }
+  ];
+
+  const avatarUpload = document.getElementById('avatarUpload');
+  const avatarPreview = document.getElementById('avatarPreview');
+  const editBtn = document.getElementById('editProfileBtn');
+  const profileEditForm = document.getElementById('profileEditForm');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const displayNameEl = document.getElementById('displayName');
+  const displayBioEl = document.getElementById('displayBio');
+  const displayDeptLevelEl = document.getElementById('displayDeptLevel');
+  const displayAccountTypeEl = document.getElementById('displayAccountType');
+  const enquiriesCountEl = document.getElementById('enquiriesCount');
+  const repliesCountEl = document.getElementById('repliesCount');
+  const likesCountEl = document.getElementById('likesCount');
+  const badgesContainer = document.querySelector('.badges-container');
+
+  const inputFullName = document.getElementById('inputFullName');
+  const inputDepartment = document.getElementById('inputDepartment');
+  const inputLevel = document.getElementById('inputLevel');
+  const inputBio = document.getElementById('inputBio');
+  const inputAccountType = document.getElementById('inputAccountType');
+
+  const defaultAvatarSrc = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+
+  let userProfile = {
+    fullname: '',
+    department: '',
+    level: '',
+    bio: '',
+    avatarUrl: '',
+    stats: { questions: 0, replies: 0, likes: 0 },
+    badges: [],
+    accountType: ''
+  };
+
+  const darkToggle = document.getElementById('darkToggle');
+  function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      darkToggle.textContent = '☀️';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      darkToggle.textContent = '🌙';
+    }
+  }
+  darkToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      darkToggle.textContent = '🌙';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      darkToggle.textContent = '☀️';
+    }
+  });
+
+  function updateProfileDisplay() {
+    displayNameEl.textContent = userProfile.fullname || 'User Name';
+    displayBioEl.textContent = userProfile.bio || 'This is your bio or motto.';
+    displayDeptLevelEl.textContent = `${userProfile.department || '[Department]'} - ${userProfile.level || '[Level]'}`;
+
+    enquiriesCountEl.textContent = userProfile.stats?.questions || 0;
+    repliesCountEl.textContent = userProfile.stats?.replies || 0;
+    likesCountEl.textContent = userProfile.stats?.likes || 0;
+
+    avatarPreview.src = userProfile.avatarUrl || defaultAvatarSrc;
+
+    badgesContainer.innerHTML = '';
+    if (userProfile.badges && userProfile.badges.length) {
+      userProfile.badges.forEach(badgeId => {
+        const badge = BADGES.find(b => b.id === badgeId);
+        if (badge) {
+          const badgeSpan = document.createElement('span');
+          badgeSpan.className = `badge ${badge.class}`;
+          badgeSpan.setAttribute('title', `${badge.name}: ${badge.description}`);
+          badgeSpan.setAttribute('role', 'listitem');
+          badgeSpan.textContent = `${badge.icon} ${badge.name}`;
+          badgesContainer.appendChild(badgeSpan);
+        }
+      });
+    }
+
+    if (userProfile.accountType) {
+      let friendlyName = '';
+      switch (userProfile.accountType) {
+        case 'verified_student_customer': friendlyName = 'Verified Student Customer'; break;
+        case 'verified_seller_account': friendlyName = 'Verified Seller Account'; break;
+        case 'verified_middle_man_account': friendlyName = 'Verified Middle Man Account'; break;
+        default: friendlyName = userProfile.accountType;
+      }
+      displayAccountTypeEl.textContent = friendlyName;
+      displayAccountTypeEl.style.display = 'inline-flex';
+    } else {
+      displayAccountTypeEl.textContent = '';
+      displayAccountTypeEl.style.display = 'none';
+    }
+
+    inputAccountType.value = userProfile.accountType || '';
+  }
+
+  async function loadUserProfile() {
+    const email = localStorage.getItem('email');
+    if (!email) {
+      alert('You must be logged in!');
+      window.location.href = 'index.html';
+      return;
+    }
+    try {
+      const res = await fetch(`http://localhost:5000/api/profile?email=${encodeURIComponent(email)}`);
+      if (!res.ok) throw new Error('Failed to fetch profile');
+      userProfile = await res.json();
+
+      userProfile.department = userProfile.school || '';
+      userProfile.level = userProfile.year || '';
+
+      updateProfileDisplay();
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      userProfile = {
+        fullname: localStorage.getItem('fullname') || 'User Name',
+        department: '',
+        level: '',
+        bio: '',
+        avatarUrl: '',
+        stats: { questions: 0, replies: 0, likes: 0 },
+        badges: [],
+        accountType: ''
+      };
+      updateProfileDisplay();
+    }
+  }
+
+  async function saveUserProfile() {
+    const email = localStorage.getItem('email');
+    if (!email) {
+      alert('You must be logged in!');
+      return;
+    }
+    try {
+      const profileToSave = {
+        ...userProfile,
+        email,
+        department: userProfile.department,
+        level: userProfile.level
+      };
+      const res = await fetch('http://localhost:5000/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileToSave)
+      });
+      if (!res.ok) throw new Error('Failed to save profile');
+      const data = await res.json();
+      userProfile = data.profile;
+      userProfile.department = userProfile.school || '';
+      userProfile.level = userProfile.year || '';
+      updateProfileDisplay();
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      alert('Failed to save profile. Please try again.');
+    }
+  }
+
+  avatarUpload.addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      avatarPreview.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const email = localStorage.getItem('email');
+    if (!email) {
+      alert('User not logged in');
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/profile/avatar?email=${encodeURIComponent(email)}`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) throw new Error('Avatar upload failed');
+      const data = await res.json();
+
+      userProfile.avatarUrl = data.avatarUrl;
+      avatarPreview.src = data.avatarUrl;
+
+      await saveUserProfile();
+    } catch (error) {
+      alert('Failed to upload avatar.');
+      console.error(error);
+    }
+  });
+
+  editBtn.addEventListener('click', () => {
+    inputFullName.value = userProfile.fullname || '';
+    inputDepartment.value = userProfile.department || '';
+    inputLevel.value = userProfile.level || '';
+    inputBio.value = userProfile.bio || '';
+    inputAccountType.value = userProfile.accountType || '';
+    profileEditForm.classList.add('active');
+    editBtn.setAttribute('aria-expanded', 'true');
+    profileEditForm.setAttribute('aria-hidden', 'false');
+    editBtn.textContent = 'Editing Profile... (Save or Cancel)';
+    editBtn.disabled = true;
+  });
+
+  cancelEditBtn.addEventListener('click', () => {
+    profileEditForm.classList.remove('active');
+    editBtn.setAttribute('aria-expanded', 'false');
+    profileEditForm.setAttribute('aria-hidden', 'true');
+    editBtn.textContent = 'Edit Profile';
+    editBtn.disabled = false;
+    updateProfileDisplay();
+  });
+
+  profileEditForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!inputFullName.value.trim()) {
+      alert('Full Name is required.');
+      inputFullName.focus();
+      return;
+    }
+    if (!inputAccountType.value) {
+      alert('Please select an account type.');
+      inputAccountType.focus();
+      return;
+    }
+    userProfile.fullname = inputFullName.value.trim();
+    userProfile.department = inputDepartment.value.trim();
+    userProfile.level = inputLevel.value;
+    userProfile.bio = inputBio.value.trim();
+    userProfile.accountType = inputAccountType.value;
+    await saveUserProfile();
+    profileEditForm.classList.remove('active');
+    editBtn.setAttribute('aria-expanded', 'false');
+    profileEditForm.setAttribute('aria-hidden', 'true');
+    editBtn.textContent = 'Edit Profile';
+    editBtn.disabled = false;
+  });
+
+  const socket = io('http://localhost:5000');
+  const userEmail = localStorage.getItem('email');
+  if (userEmail) {
+    socket.emit('join', userEmail);
+  }
+
+  socket.on('profileUpdated', (profile) => {
+    if (!profile) return;
+    userProfile = profile;
+    userProfile.department = profile.school || '';
+    userProfile.level = profile.year || '';
+    updateProfileDisplay();
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    loadUserProfile();
+  });
+</script>
+
+</body>
+</html>
