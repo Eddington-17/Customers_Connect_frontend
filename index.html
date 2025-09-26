@@ -6,233 +6,300 @@
   <title>Customer's Connect - Get Information About the Price and Location of Products Near You</title>
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #3730a3;
-      --secondary: #38bdf8;
-      --bg-gradient: linear-gradient(135deg,#fcfcfb 0%,#dde8f9 100%);
-      --card-glass: rgba(255,255,255, 0.78);
-      --text: #232747;
-      --muted: #8796ad;
-      --shadow: 0 12px 30px rgba(99,102,241,0.12);
-      --radius: 22px;
-      --transition: 0.25s cubic-bezier(.75,.01,.24,1.0);
-      --glass-border: 1.8px solid #bfc6e0;
+      /* Modern color palette */
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --accent: #f72585;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #e63946;
+      
+      /* Neutral colors */
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --shadow-hover: rgba(0, 0, 0, 0.12);
+      
+      /* Dark mode colors */
+      --dark-bg-primary: #0f172a;
+      --dark-bg-secondary: #1e293b;
+      --dark-bg-card: #1e293b;
+      --dark-text-primary: #f1f5f9;
+      --dark-text-secondary: #cbd5e1;
+      --dark-text-muted: #94a3b8;
+      --dark-border: #334155;
+      --dark-shadow: rgba(0, 0, 0, 0.3);
+      --dark-shadow-hover: rgba(0, 0, 0, 0.4);
+      
+      /* Spacing */
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+      
+      /* Border radius */
+      --radius-sm: 0.5rem;
+      --radius-md: 0.75rem;
+      --radius-lg: 1rem;
+      
+      /* Typography */
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.25rem;
+      --font-size-xl: 1.5rem;
+      --font-size-2xl: 2rem;
+      
+      /* Transitions */
+      --transition: all 0.2s ease;
     }
-    [data-theme='dark'] {
-      --bg-gradient: linear-gradient(135deg,#232747 0%, #344060 100%);
-      --card-glass: rgba(34,44,67, 0.88);
-      --text: #f1f3f8;
-      --muted: #bac2d7;
-      --shadow: 0 12px 30px rgba(99,102,241,0.3);
-      --glass-border: 1.8px solid #344060;
+
+    [data-theme="dark"] {
+      --bg-primary: var(--dark-bg-primary);
+      --bg-secondary: var(--dark-bg-secondary);
+      --bg-card: var(--dark-bg-card);
+      --text-primary: var(--dark-text-primary);
+      --text-secondary: var(--dark-text-secondary);
+      --text-muted: var(--dark-text-muted);
+      --border: var(--dark-border);
+      --shadow: var(--dark-shadow);
+      --shadow-hover: var(--dark-shadow-hover);
     }
+
     * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
     }
+
     body, html {
-      margin: 0; padding: 0;
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: var(--transition);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 25px;
-      transition: background var(--transition), color var(--transition);
-      user-select: none;
+      padding: var(--spacing-md);
     }
+
     .container {
-      background: var(--card-glass);
-      border-radius: var(--radius);
-      max-width: 900px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      max-width: 1000px;
       width: 100%;
-      box-shadow: var(--shadow);
+      box-shadow: 0 10px 30px var(--shadow);
       display: flex;
       overflow: hidden;
       flex-wrap: wrap;
-      border: var(--glass-border);
-      backdrop-filter: blur(15px);
-      user-select: text;
+      border: 1px solid var(--border);
     }
+
     .hero {
-      flex: 1 1 400px;
-      background: linear-gradient(135deg, var(--primary) 15%, var(--secondary) 90%);
+      flex: 1 1 450px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       color: white;
-      padding: 50px 42px;
+      padding: var(--spacing-xl);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
       position: relative;
-      border-radius: var(--radius) 0 0 var(--radius);
-      box-shadow: 0 12px 34px #6366f144;
-      user-select: none;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     }
+
     .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 18px;
-      line-height: 1.05;
-      font-weight: 900;
-      letter-spacing: 1px;
+      font-size: var(--font-size-2xl);
+      margin-bottom: var(--spacing-sm);
+      font-weight: 700;
+      line-height: 1.2;
     }
+
     .hero p {
-      font-size: 1.3rem;
-      margin-bottom: 38px;
-      opacity: 0.85;
+      font-size: var(--font-size-base);
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.9;
       font-weight: 500;
-      line-height: 1.3;
-      max-width: 420px;
+      line-height: 1.5;
+      max-width: 400px;
     }
+
     .icon-map {
-      width: 90px;
-      height: 90px;
-      margin-bottom: 25px;
-      fill: #a0d8f7cc;
-      filter: drop-shadow(0 0 8px #a0d8f7cc);
-      user-select: none;
+      width: 80px;
+      height: 80px;
+      margin-bottom: var(--spacing-md);
+      fill: rgba(255, 255, 255, 0.8);
     }
+
     .auth {
-      flex: 1 1 440px;
-      padding: 50px 42px 50px 40px;
+      flex: 1 1 450px;
+      padding: var(--spacing-xl);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background: var(--card-glass);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      border-left: var(--glass-border);
-      box-shadow: 0 8px 20px #6366f140 inset;
-      backdrop-filter: blur(18px);
-      user-select: text;
+      background: var(--bg-card);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
     }
+
     .toggle-buttons {
       display: flex;
-      margin-bottom: 32px;
-      border-radius: 14px;
+      margin-bottom: var(--spacing-lg);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      box-shadow: 0 3px 14px rgba(0,0,0,0.13);
-      border: var(--glass-border);
-      background: #dde3f8e3;
-      user-select: none;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
     }
+
     .toggle-buttons button {
       flex: 1;
-      padding: 16px 0;
-      font-size: 1.18rem;
+      padding: var(--spacing-sm);
+      font-size: var(--font-size-base);
       border: none;
       cursor: pointer;
       background: transparent;
-      color: var(--muted);
-      font-weight: 700;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      outline-offset: 2px;
-      outline-color: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      transition: var(--transition);
     }
-    .toggle-buttons button.active,
-    .toggle-buttons button:focus-visible {
-      background: linear-gradient(90deg, var(--primary) 50%, var(--secondary) 100%);
+
+    .toggle-buttons button.active {
+      background: var(--primary);
       color: white;
-      border-color: var(--primary);
-      box-shadow: 0 5px 20px #6366f144;
-      outline-color: transparent;
     }
+
+    .toggle-buttons button:not(.active):hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
     form {
       display: none;
       flex-direction: column;
-      animation: fadeIn 0.52s cubic-bezier(0.4,0,0.2,1) forwards;
+      animation: fadeIn 0.3s ease forwards;
     }
+
     form.active {
       display: flex;
     }
+
     label {
-      margin: 14px 0 8px;
-      font-weight: 700;
-      color: var(--primary-dark);
-      font-size: 1rem;
-      user-select: none;
+      margin: var(--spacing-sm) 0 var(--spacing-xs);
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: var(--font-size-sm);
     }
+
     input {
-      padding: 14px 16px;
-      font-size: 1.1rem;
-      border: 2px solid #c2caea;
-      border-radius: 12px;
-      transition: border-color 0.28s ease, box-shadow 0.3s ease;
-      color: var(--primary-dark);
-      background: #f7f9ff;
+      padding: var(--spacing-sm);
+      font-size: var(--font-size-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      color: var(--text-primary);
+      background: var(--bg-primary);
       font-weight: 500;
-      box-shadow: 0 1px 7px #6366f122 inset;
-      outline-offset: 2px;
-      user-select: text;
     }
+
     input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 12px #6366f1aa;
-      background: #e0e7ff;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
     }
+
     button.submit-btn {
-      margin-top: 28px;
-      padding: 18px;
-      font-size: 1.3rem;
-      font-weight: 800;
-      background: linear-gradient(90deg,var(--primary) 50%, var(--secondary) 100%);
+      margin-top: var(--spacing-lg);
+      padding: var(--spacing-sm);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 16px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      box-shadow: 0 6px 22px #6366f144;
-      transition: background-color 0.3s ease, box-shadow 0.22s ease;
-      user-select: none;
-      outline-offset: 3px;
+      transition: var(--transition);
     }
-    button.submit-btn:hover,
-    button.submit-btn:focus-visible {
+
+    button.submit-btn:hover {
       background: var(--primary-dark);
-      box-shadow: 0 8px 30px #3730a3cc;
-      outline: none;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-hover);
     }
+
     .footer-text {
-      margin-top: 20px;
-      font-size: 1rem;
-      color: var(--muted);
+      margin-top: var(--spacing-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
       text-align: center;
-      user-select: none;
       font-weight: 500;
     }
+
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
-        max-width: 460px;
-        border-radius: var(--radius);
+        max-width: 450px;
+        border-radius: var(--radius-lg);
       }
+
       .hero, .auth {
         flex: none;
         width: 100%;
-        border-radius: var(--radius);
-        padding: 40px 30px;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
       }
+
       .hero {
-        border-radius: var(--radius) var(--radius) 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
       }
+
       .auth {
-        border-radius: 0 0 var(--radius) var(--radius);
-        border-left: none !important;
-        box-shadow: 0 14px 42px #6366f140 inset;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
       }
+
       .hero h1 {
-        font-size: 2.4rem;
-      }
-      .toggle-buttons {
-        margin-bottom: 22px;
+        font-size: var(--font-size-xl);
       }
     }
+
     @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(12px);}
-      to {opacity: 1; transform: translateY(0);}
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      transition: var(--transition);
+      z-index: 10;
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  
   <div class="container" role="main" aria-label="Customer’s Connect Authentication">
     <section class="hero" aria-label="Welcome section">
       <svg class="icon-map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false" aria-label="Map icon">
@@ -241,6 +308,7 @@
       <h1>Customer's Connect</h1>
       <p>Trusted recommendations from customers around you — get advice from the customers themselves. Ask, share, and discover the best and cheapest places to shop.</p>
     </section>
+    
     <section class="auth" aria-label="Authentication forms">
       <div class="toggle-buttons" role="tablist" aria-label="Switch between login and sign up forms">
         <button id="loginBtn" class="active" role="tab" aria-selected="true" aria-controls="loginForm" tabindex="0">Login</button>
@@ -250,18 +318,23 @@
       <form id="loginForm" class="active" role="tabpanel" aria-labelledby="loginBtn" novalidate>
         <label for="loginEmail">Email</label>
         <input type="email" id="loginEmail" name="email" placeholder="you@example.com" required autocomplete="username" aria-required="true" />
+        
         <label for="loginPassword">Password</label>
         <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password" aria-required="true" />
+        
         <button type="submit" class="submit-btn">Login</button>
       </form>
 
       <form id="signupForm" role="tabpanel" aria-labelledby="signupBtn" novalidate>
         <label for="signupName">Full Name</label>
         <input type="text" id="signupName" name="fullname" placeholder="Your full name" required autocomplete="name" aria-required="true" />
+        
         <label for="signupEmail">Email</label>
         <input type="email" id="signupEmail" name="email" placeholder="you@example.com" required autocomplete="email" aria-required="true" />
+        
         <label for="signupPassword">Password</label>
         <input type="password" id="signupPassword" name="password" placeholder="Create a password" required autocomplete="new-password" aria-required="true" />
+        
         <button type="submit" class="submit-btn">Sign Up</button>
       </form>
 
@@ -270,6 +343,34 @@
   </div>
 
   <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
+      }
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '🌙';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '☀️';
+      }
+    });
+
+    // Form toggle functionality
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
     const loginForm = document.getElementById('loginForm');
@@ -302,6 +403,7 @@
     loginBtn.addEventListener('click', activateLogin);
     signupBtn.addEventListener('click', activateSignup);
 
+    // Form submission handlers
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -361,6 +463,11 @@
         alert('Signup request failed. Please try again.');
         console.error('Signup error:', error);
       }
+    });
+
+    // Initialize theme on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
     });
   </script>
 </body>

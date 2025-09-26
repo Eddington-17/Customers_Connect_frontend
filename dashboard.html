@@ -6,10 +6,892 @@
   <title>Customer's Connect - Enquiries & Recommendations</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css" />
-  <link rel = "stylesheet" href ="styles.css"/>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --accent: #f72585;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #e63946;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --shadow-hover: rgba(0, 0, 0, 0.12);
+      --dark-bg-primary: #0f172a;
+      --dark-bg-secondary: #1e293b;
+      --dark-bg-card: #1e293b;
+      --dark-text-primary: #f1f5f9;
+      --dark-text-secondary: #cbd5e1;
+      --dark-text-muted: #94a3b8;
+      --dark-border: #334155;
+      --dark-shadow: rgba(0, 0, 0, 0.3);
+      --dark-shadow-hover: rgba(0, 0, 0, 0.4);
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+      --radius-sm: 0.5rem;
+      --radius-md: 0.75rem;
+      --radius-lg: 1rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.25rem;
+      --font-size-xl: 1.5rem;
+      --font-size-2xl: 2rem;
+      --transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: var(--dark-bg-primary);
+      --bg-secondary: var(--dark-bg-secondary);
+      --bg-card: var(--dark-bg-card);
+      --text-primary: var(--dark-text-primary);
+      --text-secondary: var(--dark-text-secondary);
+      --text-muted: var(--dark-text-muted);
+      --border: var(--dark-border);
+      --shadow: var(--dark-shadow);
+      --shadow-hover: var(--dark-shadow-hover);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: var(--transition);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background-color: var(--bg-secondary);
+      box-shadow: 0 2px 10px var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .welcome {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-weight: 600;
+      font-size: var(--font-size-lg);
+    }
+
+    .dashboard-logo-inline {
+      width: 24px;
+      height: 24px;
+      fill: var(--primary);
+    }
+
+    #userFullname {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .dark-toggle, .tour-btn, .logout-btn, .profile-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      text-decoration: none;
+    }
+
+    .dark-toggle:hover, .tour-btn:hover, .logout-btn:hover, .profile-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px var(--shadow-hover);
+    }
+
+    .view-toggle {
+      display: flex;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 0.25rem;
+      margin: var(--spacing-md) auto;
+      width: fit-content;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .view-toggle button {
+      padding: 0.5rem 1.5rem;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      color: var(--text-secondary);
+    }
+
+    .view-toggle button.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .view-toggle button:not(.active):hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .search-bar {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto var(--spacing-lg);
+      box-shadow: 0 2px 8px var(--shadow);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    #searchInput {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: var(--font-size-base);
+    }
+
+    #searchInput::placeholder {
+      color: var(--text-muted);
+    }
+
+    #searchBtn {
+      padding: 0.75rem 1.25rem;
+      background: var(--primary);
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    #searchBtn:hover {
+      background: var(--primary-dark);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-md) var(--spacing-xl);
+    }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--spacing-lg);
+      align-items: start;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .deals-sidebar {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: 0 4px 12px var(--shadow);
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 100px;
+    }
+
+    .deals-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .deals-title {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .new-deal-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .new-deal-btn:hover {
+      background: #3ab0d9;
+      transform: translateY(-2px);
+    }
+
+    .deals-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .deal-item {
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .deal-item:hover {
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .deal-item.verified {
+      border-left: 3px solid var(--success);
+    }
+
+    .deal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 0.5rem;
+    }
+
+    .deal-product {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .deal-price {
+      font-weight: 700;
+      color: var(--success);
+      font-size: var(--font-size-lg);
+    }
+
+    .deal-store {
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .deal-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .deal-verified {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .verify-deal-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      transition: var(--transition);
+    }
+
+    .verify-deal-btn:hover:not(:disabled) {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .verify-deal-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .post-enquiry {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: 0;
+      box-shadow: 0 4px 12px var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .enquiry-type-selector {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .enquiry-type-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .enquiry-type-btn.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .enquiry-type-btn:hover:not(.active) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    #enquiryInput {
+      width: 100%;
+      min-height: 100px;
+      padding: var(--spacing-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      resize: vertical;
+      font-family: inherit;
+      font-size: var(--font-size-base);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+      transition: var(--transition);
+    }
+
+    #enquiryInput:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .file-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: var(--spacing-sm);
+      transition: var(--transition);
+      background: var(--bg-primary);
+    }
+
+    .file-upload-area:hover, .file-upload-area.dragover {
+      border-color: var(--primary);
+      background: rgba(67, 97, 238, 0.05);
+    }
+
+    #fileUploadText {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-sm);
+      display: none;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    #postEnquiryBtn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    #postEnquiryBtn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-hover);
+    }
+
+    .enquiry-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .enquiry-item {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .enquiry-item:hover {
+      box-shadow: 0 4px 16px var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .enquiry-item.thanked {
+      border-left: 4px solid var(--success);
+    }
+
+    .enquiry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-sm);
+      cursor: pointer;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+    }
+
+    .enquiry-title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .enquiry-type-badge {
+      font-size: var(--font-size-sm);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .enquiry-header span:first-child {
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .poster {
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .posted-user {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .toggle-icon {
+      transition: var(--transition);
+      font-size: var(--font-size-lg);
+      color: var(--text-muted);
+    }
+
+    .toggle-icon.open {
+      transform: rotate(180deg);
+    }
+
+    .three-dots-btn {
+      background: none;
+      border: none;
+      font-size: var(--font-size-lg);
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0.25rem;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .three-dots-btn:hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 0.5rem;
+      z-index: 10;
+      display: none;
+      margin-top: 0.25rem;
+      right: 0;
+    }
+
+    .dropdown-menu.open {
+      display: block;
+    }
+
+    .dropdown-menu button {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+
+    .dropdown-menu button:hover {
+      background: var(--bg-primary);
+    }
+
+    .dropdown-menu button:disabled {
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .enquiry-image {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-sm);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .reply-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .reply-list.open {
+      max-height: 1000px;
+    }
+
+    .reply-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-sm);
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-xs);
+      gap: var(--spacing-xs);
+    }
+
+    .reply-text {
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .helpful-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: var(--transition);
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .helpful-btn:hover {
+      background: var(--bg-primary);
+    }
+
+    .helpful-btn.helpful {
+      color: var(--success);
+      border-color: var(--success);
+      background: rgba(76, 201, 240, 0.1);
+    }
+
+    .like-btn, .dislike-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: var(--transition);
+      color: var(--text-secondary);
+    }
+
+    .like-btn:hover, .dislike-btn:hover {
+      background: var(--bg-primary);
+    }
+
+    .like-btn.liked {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .dislike-btn.disliked {
+      color: var(--warning);
+      border-color: var(--warning);
+    }
+
+    .reply-form {
+      display: flex;
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-sm);
+    }
+
+    .reply-form input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .map-pin-btn, .reply-form button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .map-pin-btn {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .map-pin-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .reply-form button {
+      background: var(--primary);
+      color: white;
+    }
+
+    .reply-form button:hover {
+      background: var(--primary-dark);
+    }
+
+    .map-container {
+      height: 0;
+      transition: height 0.3s ease;
+      margin-top: var(--spacing-sm);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .map-container.open {
+      height: 200px;
+    }
+
+    .enquiry-header button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .thanks-btn {
+      background: var(--success);
+      color: white;
+    }
+
+    .thanks-btn:hover {
+      background: #3ab0d9;
+    }
+
+    .thanked .reply-form {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .thanked .reply-form::before {
+      content: "This enquiry has been resolved - no further replies allowed";
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: var(--spacing-sm);
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .loading-message, .error-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin: var(--spacing-lg) auto;
+      max-width: 500px;
+      box-shadow: 0 2px 8px var(--shadow);
+      gap: var(--spacing-sm);
+    }
+
+    .error-message button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      margin-left: var(--spacing-sm);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: var(--bg-card);
+      margin: 5% auto;
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: var(--font-size-xl);
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: var(--font-size-base);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    @media (max-width: 968px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+      
+      .deals-sidebar {
+        position: static;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+      }
+      
+      .header-controls {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: var(--spacing-sm);
+      }
+      
+      .enquiry-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .reply-form {
+        flex-direction: column;
+      }
+      
+      .enquiry-type-selector {
+        flex-direction: column;
+      }
+      
+      .deals-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- THE CONTENT REMAINS THE SAME FROM HERE — ALL IDs/CLASSES ARE COMPATIBLE -->
   <header>
     <div class="welcome">
       <svg class="dashboard-logo-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -17,56 +899,154 @@
       </svg>
       Welcome, <span id="userFullname">User</span>
     </div>
-    <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
-    <a href = "profile.html" class = "profile-btn" id = "profileBtn" aria-label="My Profile" >My Profile</a>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-    <button class="tour-btn" id="startTourBtn" aria-label="Start guided tour">
-      <span style="font-size:1.3em; vertical-align:middle;">&#128161;</span> Tour
-    </button>
+    <div class="header-controls">
+      <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      <a href="profile.html" class="profile-btn" id="profileBtn" aria-label="My Profile">My Profile</a>
+      <button class="tour-btn" id="startTourBtn" aria-label="Start guided tour">
+        <span style="font-size:1.3em; vertical-align:middle;">&#128161;</span> Tour
+      </button>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
   </header>
-  <nav class="view-toggle" aria-label="Toggle enquiry views"
-    data-intro="Switch between all enquiries and just your own. Use this to filter what you see."
-    data-title="Enquiry View Toggle"
-    data-step="2">
+  
+  <nav class="view-toggle" aria-label="Toggle enquiry views">
     <button id="allEnquiriesBtn" class="active" aria-pressed="true">All Enquiries</button>
     <button id="myEnquiriesBtn" aria-pressed="false">My Enquiries</button>
+    <button id="dealsBtn" aria-pressed="false">Deals</button>
   </nav>
+  
   <div class="search-bar" role="search">
     <input type="search" id="searchInput" aria-label="Search enquiries" placeholder="Search enquiries..." />
     <button id="searchBtn" aria-label="Search enquiries">🔍</button>
   </div>
+  
   <div id="loading" class="loading-message" style="display:none;">
-    <span>⏳</span> Loading enquiries...
+    <span>⏳</span> Loading...
   </div>
+  
   <div id="error" class="error-message" style="display:none;">
-    <span>⚠️</span> Could not load enquiries. <button id="retryBtn">Retry</button>
+    <span>⚠️</span> Could not load content. <button id="retryBtn">Retry</button>
   </div>
+
   <main>
-    <section class="post-enquiry" aria-label="Post a new enquiry"
-      data-intro="Ask a question and optionally add a product image. Click 'Post Enquiry' to share."
-      data-title="Post a New Enquiry"
-      data-step="3">
-      <textarea id="enquiryInput" placeholder="Ask where to find the best quality product..." aria-label="Enquiry text"></textarea>
-      <div class="file-upload-area" id="fileUploadArea" tabindex="0" role="button" aria-describedby="fileUploadText">
-        <span id="fileUploadText">+ Add or Drag Product Image</span>
-        <input type="file" id="imageUpload" accept="image/*" style="display:none" />
+    <div class="dashboard-layout">
+      <div class="main-content">
+        <section class="post-enquiry" aria-label="Post a new enquiry" id="postEnquirySection">
+          <div class="enquiry-type-selector">
+            <button class="enquiry-type-btn active" data-type="GENERAL">❓ General</button>
+            <button class="enquiry-type-btn" data-type="PRICE_CHECK">💰 Price Check</button>
+            <button class="enquiry-type-btn" data-type="AVAILABILITY">📦 Availability</button>
+            <button class="enquiry-type-btn" data-type="RECOMMENDATION">⭐ Recommendation</button>
+            <button class="enquiry-type-btn" data-type="AUTHENTICITY">🔍 Authenticity</button>
+          </div>
+          <textarea id="enquiryInput" placeholder="Ask where to find the best quality product..." aria-label="Enquiry text"></textarea>
+          <div class="file-upload-area" id="fileUploadArea" tabindex="0" role="button" aria-describedby="fileUploadText">
+            <span id="fileUploadText">+ Add or Drag Product Image</span>
+            <input type="file" id="imageUpload" accept="image/*" style="display:none" />
+          </div>
+          <img id="imagePreview" class="image-preview" alt="Product preview" />
+          <button id="postEnquiryBtn">Post Enquiry</button>
+        </section>
+
+        <section class="enquiry-list" id="enquiryList" aria-live="polite" aria-label="List of enquiries and replies">
+          <!-- Enquiries will be rendered here -->
+        </section>
       </div>
-      <img id="imagePreview" class="image-preview" alt="Product preview" />
-      <button id="postEnquiryBtn">Post Enquiry</button>
-    </section>
-    <section class="enquiry-list" id="enquiryList" aria-live="polite" aria-label="List of enquiries and replies"
-      data-intro="Browse all posted enquiries and replies here. Click an enquiry to see more."
-      data-title="Enquiries & Replies"
-      data-step="4">
-    </section>
+
+      <aside class="deals-sidebar" id="dealsSidebar">
+        <div class="deals-header">
+          <h3 class="deals-title">🔥 Hot Deals</h3>
+          <button class="new-deal-btn" id="newDealBtn">+ Share Deal</button>
+        </div>
+        <div class="deals-list" id="dealsList">
+          <!-- Deals will be rendered here -->
+        </div>
+      </aside>
+    </div>
   </main>
+
+  <!-- New Deal Modal -->
+  <div id="dealModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Share a Great Deal</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="dealForm">
+        <div class="form-group">
+          <label for="dealProduct">Product Name *</label>
+          <input type="text" id="dealProduct" required>
+        </div>
+        <div class="form-group">
+          <label for="dealStore">Store *</label>
+          <input type="text" id="dealStore" required>
+        </div>
+        <div class="form-group">
+          <label for="dealPrice">Current Price *</label>
+          <input type="number" id="dealPrice" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="dealOriginalPrice">Original Price (optional)</label>
+          <input type="number" id="dealOriginalPrice" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="dealLocation">Location</label>
+          <input type="text" id="dealLocation" placeholder="City or store location">
+        </div>
+        <div class="form-group">
+          <label for="dealDescription">Description</label>
+          <textarea id="dealDescription" placeholder="Any details about the deal..."></textarea>
+        </div>
+        <button type="submit" class="new-deal-btn" style="width:100%">Share Deal</button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
-  <!-- The rest of your JS remains identical -->
-  <!-- ... JS code here ... -->
-   <script>
+  <script>
+    // Socket.IO connection
     const socket = io('http://localhost:5000');
+    
+    // Global state
+    let enquiries = [];
+    let deals = [];
+    let currentView = 'all';
+    let newEnquiryImageFile = null;
+    let lastSearch = '';
+    let selectedEnquiryType = 'GENERAL';
+    const reportedEnquiries = new Set();
+    
+    // DOM Elements
+    const userFullname = localStorage.getItem('fullname') || 'User';
+    document.getElementById('userFullname').textContent = userFullname;
+    
+    const darkToggle = document.getElementById('darkToggle');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const allEnquiriesBtn = document.getElementById('allEnquiriesBtn');
+    const myEnquiriesBtn = document.getElementById('myEnquiriesBtn');
+    const dealsBtn = document.getElementById('dealsBtn');
+    const enquiryListEl = document.getElementById('enquiryList');
+    const enquiryInputEl = document.getElementById('enquiryInput');
+    const postEnquiryBtn = document.getElementById('postEnquiryBtn');
+    const imageUploadInput = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileUploadText = document.getElementById('fileUploadText');
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const retryBtn = document.getElementById('retryBtn');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const newDealBtn = document.getElementById('newDealBtn');
+    const dealModal = document.getElementById('dealModal');
+    const closeModal = document.querySelector('.close-modal');
+    const dealForm = document.getElementById('dealForm');
+    const dealsList = document.getElementById('dealsList');
+    const enquiryTypeBtns = document.querySelectorAll('.enquiry-type-btn');
+    
+    // Socket event handlers
     socket.on('connect', () => {
       console.log('Socket.IO connected! Socket ID:', socket.id);
     });
@@ -80,6 +1060,7 @@
       }
       renderEnquiries();
     });
+
     socket.on('newReply', ({ enquiryId, reply }) => {
       const enquiry = enquiries.find(e => e.id === enquiryId);
       if (enquiry) {
@@ -88,6 +1069,7 @@
         renderEnquiries();
       }
     });
+
     socket.on('replyLiked', ({ enquiryId, replyId, likes, likedBy }) => {
       const enquiry = enquiries.find(e => e.id === enquiryId);
       if (enquiry) {
@@ -99,6 +1081,7 @@
         }
       }
     });
+
     socket.on('replyDisliked', ({ enquiryId, replyId, dislikes, dislikedBy }) => {
       const enquiry = enquiries.find(e => e.id === enquiryId);
       if (enquiry) {
@@ -110,10 +1093,12 @@
         }
       }
     });
+
     socket.on('enquiryDeleted', ({ enquiryId }) => {
       enquiries = enquiries.filter(e => e.id !== enquiryId);
       renderEnquiries();
     });
+
     socket.on('enquiryThanked', ({ enquiryId, thanked }) => {
       const enquiry = enquiries.find(e => e.id === enquiryId);
       if (enquiry) {
@@ -122,38 +1107,37 @@
       }
     });
 
-    const darkToggle = document.getElementById('darkToggle');
+    socket.on('newDeal', (deal) => {
+      fetchDeals();
+    });
+
+    socket.on('dealVerified', ({ dealId, verificationCount, verified }) => {
+      const dealItem = document.querySelector(`.deal-item[data-deal-id="${dealId}"]`);
+      if (dealItem) {
+        const verifyCount = dealItem.querySelector('.deal-verify-count');
+        const verifyBtn = dealItem.querySelector('.verify-deal-btn');
+        if (verifyCount) verifyCount.textContent = verificationCount;
+        if (verified) {
+          dealItem.classList.add('verified');
+          if (verifyBtn) verifyBtn.disabled = true;
+        }
+      }
+    });
+
+    socket.on('replyHelpfulUpdated', ({ enquiryId, replyId, helpfulCount }) => {
+      const replyEl = document.querySelector(`.reply-item[data-reply-id="${replyId}"]`);
+      if (replyEl) {
+        const helpfulSpan = replyEl.querySelector('.helpful-count');
+        if (helpfulSpan) helpfulSpan.textContent = helpfulCount;
+      }
+    });
+
+    // Event Listeners
     darkToggle.onclick = () => {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
       darkToggle.textContent = isDark ? '🌙' : '☀️';
     };
-
-    const userFullname = localStorage.getItem('fullname') || 'User';
-    document.getElementById('userFullname').textContent = userFullname;
-    const logoutBtn = document.getElementById('logoutBtn');
-    const allEnquiriesBtn = document.getElementById('allEnquiriesBtn');
-    const myEnquiriesBtn = document.getElementById('myEnquiriesBtn');
-    const enquiryListEl = document.getElementById('enquiryList');
-    const enquiryInputEl = document.getElementById('enquiryInput');
-    const postEnquiryBtn = document.getElementById('postEnquiryBtn');
-    const imageUploadInput = document.getElementById('imageUpload');
-    const imagePreview = document.getElementById('imagePreview');
-    const fileUploadArea = document.getElementById('fileUploadArea');
-    const fileUploadText = document.getElementById('fileUploadText');
-    const loadingEl = document.getElementById('loading');
-    const errorEl = document.getElementById('error');
-    const retryBtn = document.getElementById('retryBtn');
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-
-    // Store current reported enquiries for session
-    const reportedEnquiries = new Set();
-
-    let enquiries = [];
-    let currentView = 'all';
-    let newEnquiryImageFile = null;
-    let lastSearch = '';
 
     logoutBtn.onclick = () => {
       localStorage.removeItem('token');
@@ -162,35 +1146,56 @@
       window.location.href = 'index.html';
     };
 
-    allEnquiriesBtn.onclick = () => {
-      if (currentView !== 'all') {
-        currentView = 'all';
-        updateViewToggle();
-        fetchEnquiries();
-      }
-    };
-    myEnquiriesBtn.onclick = () => {
-      if (currentView !== 'mine') {
-        currentView = 'mine';
-        updateViewToggle();
-        fetchEnquiries();
-      }
-    };
+    // Enquiry type selection
+    enquiryTypeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        enquiryTypeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedEnquiryType = btn.dataset.type;
+      });
+    });
 
-    function updateViewToggle() {
-      if (currentView === 'all') {
-        allEnquiriesBtn.classList.add('active');
-        allEnquiriesBtn.setAttribute('aria-pressed', 'true');
-        myEnquiriesBtn.classList.remove('active');
-        myEnquiriesBtn.setAttribute('aria-pressed', 'false');
+    // View toggle handlers
+    allEnquiriesBtn.onclick = () => switchView('all');
+    myEnquiriesBtn.onclick = () => switchView('mine');
+    dealsBtn.onclick = () => switchView('deals');
+
+    function switchView(view) {
+      currentView = view;
+      updateViewToggle();
+      
+      if (view === 'deals') {
+        document.getElementById('postEnquirySection').style.display = 'none';
+        document.getElementById('enquiryList').style.display = 'none';
+        document.getElementById('dealsSidebar').style.display = 'block';
+        fetchDeals();
       } else {
-        myEnquiriesBtn.classList.add('active');
-        myEnquiriesBtn.setAttribute('aria-pressed', 'true');
-        allEnquiriesBtn.classList.remove('active');
-        allEnquiriesBtn.setAttribute('aria-pressed', 'false');
+        document.getElementById('postEnquirySection').style.display = 'block';
+        document.getElementById('enquiryList').style.display = 'block';
+        document.getElementById('dealsSidebar').style.display = 'block';
+        fetchEnquiries();
       }
     }
 
+    function updateViewToggle() {
+      [allEnquiriesBtn, myEnquiriesBtn, dealsBtn].forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
+      });
+      
+      if (currentView === 'all') {
+        allEnquiriesBtn.classList.add('active');
+        allEnquiriesBtn.setAttribute('aria-pressed', 'true');
+      } else if (currentView === 'mine') {
+        myEnquiriesBtn.classList.add('active');
+        myEnquiriesBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        dealsBtn.classList.add('active');
+        dealsBtn.setAttribute('aria-pressed', 'true');
+      }
+    }
+
+    // File upload handling
     fileUploadArea.addEventListener('click', () => imageUploadInput.click());
     fileUploadArea.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -234,6 +1239,113 @@
       reader.readAsDataURL(file);
     });
 
+    // Modal handlers
+    newDealBtn.onclick = () => dealModal.style.display = 'block';
+    closeModal.onclick = () => dealModal.style.display = 'none';
+    window.onclick = (e) => {
+      if (e.target === dealModal) dealModal.style.display = 'none';
+    };
+
+    // Deal form submission
+    dealForm.onsubmit = async (e) => {
+      e.preventDefault();
+      
+      const dealData = {
+        productName: document.getElementById('dealProduct').value,
+        store: document.getElementById('dealStore').value,
+        price: parseFloat(document.getElementById('dealPrice').value),
+        originalPrice: document.getElementById('dealOriginalPrice').value ? 
+          parseFloat(document.getElementById('dealOriginalPrice').value) : null,
+        location: document.getElementById('dealLocation').value,
+        description: document.getElementById('dealDescription').value,
+        postedBy: userFullname,
+        email: localStorage.getItem('email') || ''
+      };
+
+      try {
+        const res = await fetch('http://localhost:5000/api/deals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dealData)
+        });
+        
+        if (!res.ok) throw new Error('Failed to post deal');
+        
+        dealForm.reset();
+        dealModal.style.display = 'none';
+        fetchDeals();
+      } catch (error) {
+        alert('Failed to share deal. Please try again.');
+      }
+    };
+
+    // Fetch and render deals
+    async function fetchDeals() {
+      try {
+        const res = await fetch('http://localhost:5000/api/deals');
+        if (!res.ok) throw new Error('Failed to fetch deals');
+        deals = await res.json();
+        renderDeals();
+      } catch (error) {
+        console.error('Error fetching deals:', error);
+      }
+    }
+
+    function renderDeals() {
+      dealsList.innerHTML = '';
+      
+      if (deals.length === 0) {
+        dealsList.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:var(--spacing-md);">No deals shared yet</p>';
+        return;
+      }
+
+      deals.forEach(deal => {
+        const dealEl = document.createElement('div');
+        dealEl.className = `deal-item ${deal.verified ? 'verified' : ''}`;
+        dealEl.setAttribute('data-deal-id', deal.id);
+
+        const discount = deal.originalPrice ? 
+          Math.round((1 - deal.price / deal.originalPrice) * 100) : null;
+
+        dealEl.innerHTML = `
+          <div class="deal-header">
+            <div class="deal-product">${deal.productName}</div>
+            <div class="deal-price">$${deal.price.toFixed(2)}</div>
+          </div>
+          <div class="deal-store">at ${deal.store}</div>
+          ${discount ? `<div style="color:var(--success); font-weight:600;">${discount}% OFF</div>` : ''}
+          ${deal.description ? `<div style="margin-top:0.5rem; font-size:0.9rem;">${deal.description}</div>` : ''}
+          ${deal.location ? `<div style="color:var(--text-muted); font-size:0.8rem;">📍 ${deal.location}</div>` : ''}
+          <div class="deal-meta">
+            <span>by ${deal.postedBy}</span>
+            <button class="verify-deal-btn" onclick="verifyDeal(${deal.id})" 
+                    ${deal.verifiers && deal.verifiers.includes(localStorage.getItem('email')) ? 'disabled' : ''}>
+              ✅ <span class="deal-verify-count">${deal.verificationCount || 0}</span>
+            </button>
+          </div>
+        `;
+
+        dealsList.appendChild(dealEl);
+      });
+    }
+
+    // Verify deal function
+    window.verifyDeal = async (dealId) => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/deals/${dealId}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ verifierEmail: localStorage.getItem('email') })
+        });
+        
+        if (!res.ok) throw new Error('Failed to verify deal');
+        fetchDeals();
+      } catch (error) {
+        alert('Failed to verify deal. Please try again.');
+      }
+    };
+
+    // Fetch and render enquiries
     async function fetchEnquiries() {
       loadingEl.style.display = 'flex';
       errorEl.style.display = 'none';
@@ -252,7 +1364,7 @@
 
     retryBtn.onclick = fetchEnquiries;
 
-    // Report Enquiry handler
+    // Report enquiry handler
     async function handleReportClick(enquiryId, button, dropdown) {
       if (reportedEnquiries.has(enquiryId)) {
         alert('You have already reported this enquiry.');
@@ -284,9 +1396,11 @@
     function renderEnquiries() {
       enquiryListEl.innerHTML = '';
       let filteredEnquiries = enquiries;
+      
       if (currentView === 'mine') {
         filteredEnquiries = enquiries.filter(e => e.postedBy === userFullname);
       }
+      
       if (lastSearch.trim()) {
         const q = lastSearch.trim().toLowerCase();
         filteredEnquiries = filteredEnquiries.filter(
@@ -294,36 +1408,43 @@
             (e.replies && e.replies.some(r => r.text && r.text.toLowerCase().includes(q)))
         );
       }
+      
       if (!filteredEnquiries || filteredEnquiries.length === 0) {
-        enquiryListEl.innerHTML = `<p style="color:var(--muted); font-style: italic;">No enquiries to display.</p>`;
+        enquiryListEl.innerHTML = `<p style="color:var(--text-muted); font-style: italic; text-align: center; padding: var(--spacing-lg);">No enquiries to display.</p>`;
         return;
       }
+
       filteredEnquiries.slice().reverse().forEach((enquiry) => {
         const enquiryEl = document.createElement('article');
         enquiryEl.className = 'enquiry-item';
+        if (enquiry.thanked) enquiryEl.classList.add('thanked');
         enquiryEl.setAttribute('tabindex', '0');
-        if (enquiry.thanked) {
-          enquiryEl.classList.add('thanked');
-        } else {
-          enquiryEl.classList.remove('thanked');
-        }
 
-        // Header with toggle + three dots button
         const headerEl = document.createElement('div');
         headerEl.className = 'enquiry-header';
 
-        // Question text span
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'enquiry-title';
+        
+        // Add enquiry type badge
+        if (enquiry.typeLabel) {
+          const typeBadge = document.createElement('span');
+          typeBadge.className = 'enquiry-type-badge';
+          typeBadge.textContent = enquiry.typeLabel;
+          titleDiv.appendChild(typeBadge);
+        }
+
         const questionSpan = document.createElement('span');
         questionSpan.textContent = enquiry.question;
-        headerEl.appendChild(questionSpan);
+        titleDiv.appendChild(questionSpan);
 
-        // Poster label
+        headerEl.appendChild(titleDiv);
+
         const userLabel = document.createElement('span');
         userLabel.className = 'poster';
         userLabel.innerHTML = `(posted by <span class="posted-user">${enquiry.postedBy}</span>)`;
         headerEl.appendChild(userLabel);
 
-        // Toggle icon
         const toggleIcon = document.createElement('span');
         toggleIcon.className = 'toggle-icon';
         toggleIcon.innerHTML = '&#9660;';
@@ -368,14 +1489,15 @@
         if (enquiry.postedBy === userFullname) {
           const deleteBtn = document.createElement('button');
           deleteBtn.textContent = 'Delete';
-          deleteBtn.style.background = '#ef4444';
+          deleteBtn.style.background = 'var(--danger)';
           deleteBtn.style.color = 'white';
           deleteBtn.style.border = 'none';
-          deleteBtn.style.padding = '6px 12px';
-          deleteBtn.style.borderRadius = '8px';
+          deleteBtn.style.padding = '0.5rem 1rem';
+          deleteBtn.style.borderRadius = 'var(--radius-sm)';
           deleteBtn.style.cursor = 'pointer';
-          deleteBtn.style.fontWeight = '700';
+          deleteBtn.style.fontWeight = '600';
           deleteBtn.style.marginLeft = '10px';
+          deleteBtn.style.transition = 'var(--transition)';
 
           deleteBtn.onclick = async e => {
             e.stopPropagation();
@@ -399,8 +1521,8 @@
 
           const thanksBtn = document.createElement('button');
           thanksBtn.className = 'thanks-btn';
-          thanksBtn.title = 'Mark enquiry as met and say thanks';
-          thanksBtn.textContent = enquiry.thanked ? 'Thanked ✅' : 'Thanks ✅';
+          thanksBtn.title = 'Mark enquiry as resolved';
+          thanksBtn.textContent = enquiry.thanked ? 'Resolved ✅' : 'Mark Resolved';
 
           thanksBtn.onclick = async ev => {
             ev.stopPropagation();
@@ -412,14 +1534,15 @@
               });
               if (!res.ok) {
                 const err = await res.json();
-                alert('Failed to update thanks: ' + (err.error || 'Unknown error'));
+                alert('Failed to update status: ' + (err.error || 'Unknown error'));
                 return;
               }
               enquiry.thanked = !enquiry.thanked;
-              thanksBtn.textContent = enquiry.thanked ? 'Thanked ✅' : 'Thanks ✅';
+              thanksBtn.textContent = enquiry.thanked ? 'Resolved ✅' : 'Mark Resolved';
               enquiryEl.classList.toggle('thanked', enquiry.thanked);
+              renderEnquiries();
             } catch {
-              alert('Error marking thanks. Please try again.');
+              alert('Error marking enquiry as resolved. Please try again.');
             }
           };
           headerEl.appendChild(thanksBtn);
@@ -456,13 +1579,38 @@
           enquiry.replies.forEach(reply => {
             const replyEl = document.createElement('div');
             replyEl.className = 'reply-item';
+            replyEl.setAttribute('data-reply-id', reply.replyId);
 
             const replyTextEl = document.createElement('div');
             replyTextEl.className = 'reply-text';
             replyTextEl.textContent = `${reply.replyBy}: ${reply.text}`;
             replyEl.appendChild(replyTextEl);
 
-            // Like button
+            // Helpful button (new feature)
+            const helpfulBtn = document.createElement('button');
+            helpfulBtn.className = 'helpful-btn';
+            helpfulBtn.setAttribute('aria-label', 'Mark as helpful');
+            helpfulBtn.innerHTML = `👍 Helpful <span class="helpful-count">${reply.helpfulCount || 0}</span>`;
+            
+            if (reply.helpfulRatings && reply.helpfulRatings.some(r => r.voterEmail === localStorage.getItem('email'))) {
+              helpfulBtn.classList.add('helpful');
+            }
+
+            helpfulBtn.onclick = async () => {
+              try {
+                const res = await fetch(`http://localhost:5000/enquiries/${enquiry.id}/replies/${reply.replyId}/helpful`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ voterEmail: localStorage.getItem('email') })
+                });
+                await fetchEnquiries();
+              } catch {
+                alert('Failed to update helpful rating. Try again.');
+              }
+            };
+            replyEl.appendChild(helpfulBtn);
+
+            // Like button (keep for compatibility)
             const likeBtn = document.createElement('button');
             likeBtn.className = 'like-btn';
             likeBtn.setAttribute('aria-label', 'Like reply');
@@ -487,7 +1635,7 @@
             };
             replyEl.appendChild(likeBtn);
 
-            // Dislike button (shown with count only to enquiry poster)
+            // Dislike button (keep for compatibility)
             const dislikeBtn = document.createElement('button');
             dislikeBtn.className = 'dislike-btn';
             dislikeBtn.setAttribute('aria-label', 'Dislike reply');
@@ -525,9 +1673,10 @@
               locBtn.style.background = 'var(--primary)';
               locBtn.style.color = 'white';
               locBtn.style.border = 'none';
-              locBtn.style.padding = '4px 8px';
-              locBtn.style.borderRadius = '8px';
+              locBtn.style.padding = '0.4rem 0.8rem';
+              locBtn.style.borderRadius = 'var(--radius-sm)';
               locBtn.style.cursor = 'pointer';
+              locBtn.style.fontWeight = '500';
               locBtn.onclick = () => {
                 alert(`Location pinned at: Lat ${reply.mapPin.lat.toFixed(4)}, Lng ${reply.mapPin.lng.toFixed(4)}`);
               };
@@ -540,96 +1689,104 @@
 
         enquiryEl.appendChild(repliesEl);
 
-        // Reply form
-        const replyForm = document.createElement('form');
-        replyForm.className = 'reply-form';
-        replyForm.setAttribute('aria-label', 'Reply to enquiry');
+        // Reply form - only show if enquiry is not thanked
+        if (!enquiry.thanked) {
+          const replyForm = document.createElement('form');
+          replyForm.className = 'reply-form';
+          replyForm.setAttribute('aria-label', 'Reply to enquiry');
 
-        const replyInput = document.createElement('input');
-        replyInput.type = 'text';
-        replyInput.placeholder = 'Write a reply...';
-        replyInput.required = true;
-        replyInput.setAttribute('aria-required', 'true');
-        replyForm.appendChild(replyInput);
+          const replyInput = document.createElement('input');
+          replyInput.type = 'text';
+          replyInput.placeholder = 'Write a reply...';
+          replyInput.required = true;
+          replyInput.setAttribute('aria-required', 'true');
+          replyForm.appendChild(replyInput);
 
-        const mapPinBtn = document.createElement('button');
-        mapPinBtn.type = 'button';
-        mapPinBtn.className = 'map-pin-btn';
-        mapPinBtn.textContent = 'Add Map Pin';
-        replyForm.appendChild(mapPinBtn);
+          const mapPinBtn = document.createElement('button');
+          mapPinBtn.type = 'button';
+          mapPinBtn.className = 'map-pin-btn';
+          mapPinBtn.textContent = 'Add Map Pin';
+          replyForm.appendChild(mapPinBtn);
 
-        const mapContainer = document.createElement('div');
-        mapContainer.className = 'map-container';
-        enquiryEl.appendChild(mapContainer);
+          const mapContainer = document.createElement('div');
+          mapContainer.className = 'map-container';
+          enquiryEl.appendChild(mapContainer);
 
-        let map, marker, mapPinCoords = null;
+          let map, marker, mapPinCoords = null;
 
-        mapPinBtn.onclick = () => {
-          if (mapContainer.classList.contains('open')) {
-            mapContainer.classList.remove('open');
-            mapPinBtn.textContent = 'Add Map Pin';
-            mapPinCoords = null;
+          mapPinBtn.onclick = () => {
+            if (mapContainer.classList.contains('open')) {
+              mapContainer.classList.remove('open');
+              mapPinBtn.textContent = 'Add Map Pin';
+              mapPinCoords = null;
+              if (marker) {
+                map.removeLayer(marker);
+                marker = null;
+              }
+            } else {
+              mapContainer.classList.add('open');
+              mapPinBtn.textContent = 'Remove Map Pin';
+              if (!map) {
+                map = L.map(mapContainer).setView([9.05785, 7.49508], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                map.on('click', e => {
+                  if (marker) {
+                    marker.setLatLng(e.latlng);
+                  } else {
+                    marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+                  }
+                  mapPinCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
+                });
+              }
+            }
+          };
+
+          const replyBtn = document.createElement('button');
+          replyBtn.type = 'submit';
+          replyBtn.textContent = 'Reply';
+          replyForm.appendChild(replyBtn);
+
+          replyForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const replyText = replyInput.value.trim();
+            if (!replyText) return;
+            await fetch(`http://localhost:5000/enquiries/${enquiry.id}/replies`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                replyBy: userFullname,
+                text: replyText,
+                lat: mapPinCoords ? mapPinCoords.lat : '',
+                lng: mapPinCoords ? mapPinCoords.lng : '',
+                email: localStorage.getItem('email') || ''
+              })
+            });
+            replyInput.value = '';
+            if (mapContainer.classList.contains('open')) {
+              mapContainer.classList.remove('open');
+              mapPinBtn.textContent = 'Add Map Pin';
+            }
             if (marker) {
               map.removeLayer(marker);
               marker = null;
             }
-          } else {
-            mapContainer.classList.add('open');
-            mapPinBtn.textContent = 'Remove Map Pin';
-            if (!map) {
-              map = L.map(mapContainer).setView([9.05785, 7.49508], 13);
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-              }).addTo(map);
-              map.on('click', e => {
-                if (marker) {
-                  marker.setLatLng(e.latlng);
-                } else {
-                  marker = L.marker(e.latlng, { draggable: true }).addTo(map);
-                }
-                mapPinCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
-              });
+            mapPinCoords = null;
+            await fetchEnquiries();
+            replyInput.focus();
+            if (!repliesEl.classList.contains('open')) {
+              toggleReplies();
             }
-          }
-        };
-
-        const replyBtn = document.createElement('button');
-        replyBtn.type = 'submit';
-        replyBtn.textContent = 'Reply';
-        replyForm.appendChild(replyBtn);
-
-        replyForm.addEventListener('submit', async e => {
-          e.preventDefault();
-          const replyText = replyInput.value.trim();
-          if (!replyText) return;
-          await fetch(`http://localhost:5000/enquiries/${enquiry.id}/replies`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              replyBy: userFullname,
-              text: replyText,
-              lat: mapPinCoords ? mapPinCoords.lat : '',
-              lng: mapPinCoords ? mapPinCoords.lng : ''
-            })
           });
-          replyInput.value = '';
-          if (mapContainer.classList.contains('open')) {
-            mapContainer.classList.remove('open');
-            mapPinBtn.textContent = 'Add Map Pin';
-          }
-          if (marker) {
-            map.removeLayer(marker);
-            marker = null;
-          }
-          mapPinCoords = null;
-          await fetchEnquiries();
-          replyInput.focus();
-          if (!repliesEl.classList.contains('open')) {
-            toggleReplies();
-          }
-        });
 
-        enquiryEl.appendChild(replyForm);
+          enquiryEl.appendChild(replyForm);
+        } else {
+          const resolvedMessage = document.createElement('div');
+          resolvedMessage.className = 'reply-form';
+          resolvedMessage.innerHTML = '<p style="color: var(--text-muted); font-style: italic; text-align: center; padding: var(--spacing-sm);">This enquiry has been resolved - no further replies allowed</p>';
+          enquiryEl.appendChild(resolvedMessage);
+        }
 
         function toggleReplies() {
           const isOpen = repliesEl.classList.toggle('open');
@@ -642,6 +1799,7 @@
       });
     }
 
+    // Search functionality
     function searchEnquiries() {
       lastSearch = searchInput.value || '';
       renderEnquiries();
@@ -654,16 +1812,20 @@
       }
     });
 
+    // Post enquiry functionality
     postEnquiryBtn.onclick = async () => {
       const text = enquiryInputEl.value.trim();
       if (!text) {
         alert('Please enter your enquiry.');
         return;
       }
+      
       const formData = new FormData();
       formData.append('fullname', userFullname);
-      formData.append('email', '');
+      formData.append('email', localStorage.getItem('email') || '');
       formData.append('question', text);
+      formData.append('enquiryType', selectedEnquiryType);
+      
       if (newEnquiryImageFile) formData.append('image', newEnquiryImageFile);
 
       try {
@@ -672,6 +1834,7 @@
           body: formData
         });
         if (!res.ok) throw new Error('Failed to post enquiry');
+        
         enquiryInputEl.value = '';
         imagePreview.src = '';
         imagePreview.style.display = 'none';
@@ -685,9 +1848,7 @@
       }
     };
 
-    imagePreview.style.display = 'none';
-    updateViewToggle();
-    fetchEnquiries();
+    // Tour functionality
     const startTourBtn = document.getElementById('startTourBtn');
     startTourBtn.addEventListener('click', () => {
       introJs()
@@ -698,18 +1859,23 @@
             },
             {
               element: document.querySelector('.view-toggle'),
-              intro: "Switch between viewing all enquiries or just your own here.",
+              intro: "Switch between viewing all enquiries, your enquiries, or deals here.",
               position: 'bottom'
             },
             {
               element: document.querySelector('.post-enquiry'),
-              intro: "Use this section to post a new enquiry. You can add a product image!",
+              intro: "Use this section to post a new enquiry. You can categorize it and add a product image!",
               position: 'top'
             },
             {
               element: document.querySelector('.enquiry-list'),
               intro: "Browse all enquiries and their replies here. Click on enquiries to expand.",
               position: 'top'
+            },
+            {
+              element: document.getElementById('dealsSidebar'),
+              intro: "Check out hot deals shared by the community. Verify deals you've seen yourself!",
+              position: 'left'
             },
             {
               element: document.getElementById('darkToggle'),
@@ -732,7 +1898,12 @@
         })
         .start();
     });
+
+    // Initialize
+    imagePreview.style.display = 'none';
+    switchView('all');
+    fetchDeals();
+
   </script>
 </body>
-</html>  
-  
+</html>
