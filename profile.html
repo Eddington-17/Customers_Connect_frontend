@@ -254,6 +254,53 @@
     margin-bottom: var(--spacing-md);
   }
 
+  /* Points System */
+  .points-container {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+  }
+
+  .points-display {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .points-label {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+  }
+
+  .level-progress {
+    margin-top: var(--spacing-sm);
+  }
+
+  .level-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
   /* Profile Stats */
   .profile-stats {
     display: flex;
@@ -285,25 +332,38 @@
   }
 
   /* Badges */
+  .badges-section {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .badges-section h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+  }
+
   .badges-container {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     margin-bottom: var(--spacing-lg);
   }
 
   .badge {
     background: var(--secondary);
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
     font-weight: 600;
     font-size: var(--font-size-sm);
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    box-shadow: 0 2px 4px rgba(114, 9, 183, 0.2);
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(114, 9, 183, 0.2);
     transition: var(--transition);
+    cursor: help;
+    position: relative;
+    min-width: 140px;
   }
 
   .badge.verified {
@@ -318,9 +378,41 @@
     background: var(--accent);
   }
 
+  .badge.elite {
+    background: linear-gradient(135deg, #ffd700, #ff6b00);
+  }
+
+  .badge.expert {
+    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  }
+
+  .badge.community {
+    background: linear-gradient(135deg, #10B981, #059669);
+  }
+
   .badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .badge-icon {
+    font-size: 1.2em;
+  }
+
+  .badge-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .badge-name {
+    font-weight: 700;
+    font-size: 0.9em;
+  }
+
+  .badge-description {
+    font-size: 0.75em;
+    opacity: 0.9;
+    margin-top: 0.1rem;
   }
 
   /* Edit Profile Form */
@@ -444,6 +536,15 @@
       gap: var(--spacing-sm);
     }
 
+    .badges-container {
+      justify-content: center;
+    }
+
+    .badge {
+      min-width: 120px;
+      flex: 1;
+    }
+
     header {
       flex-wrap: wrap;
       gap: var(--spacing-sm);
@@ -493,6 +594,21 @@
         <div id="displayAccountType" class="account-type-badge" aria-label="Account Type" role="region" tabindex="0"></div>
       </div>
 
+      <!-- Points System -->
+      <div class="points-container">
+        <div class="points-display" id="pointsDisplay">0 Points</div>
+        <div class="points-label">Community Reputation</div>
+        <div class="level-progress">
+          <div class="level-info">
+            <span id="currentLevel">Level 1: Novice</span>
+            <span id="nextLevel">Level 2: Contributor (100 points)</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="profile-stats" aria-label="User activity statistics">
         <div class="stat-item">
           <strong id="enquiriesCount">0</strong>
@@ -506,10 +622,23 @@
           <strong id="likesCount">0</strong>
           <span>Likes Received</span>
         </div>
+        <div class="stat-item">
+          <strong id="helpfulCount">0</strong>
+          <span>Helpful Votes</span>
+        </div>
       </div>
 
-      <div class="badges-container" aria-label="Earned badges" role="list" aria-live="polite">
-        <!-- badges inserted dynamically -->
+      <!-- Badges Section -->
+      <div class="badges-section">
+        <h3>🏆 Earned Badges</h3>
+        <div class="badges-container" aria-label="Earned badges" role="list" aria-live="polite" id="earnedBadges">
+          <!-- Earned badges inserted dynamically -->
+        </div>
+        
+        <h3>🔒 Available Badges</h3>
+        <div class="badges-container" aria-label="Available badges" role="list" id="availableBadges">
+          <!-- Available badges inserted dynamically -->
+        </div>
       </div>
 
       <button id="editProfileBtn" aria-expanded="false" aria-controls="profileEditForm">
@@ -557,10 +686,89 @@
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
+  // Enhanced Badge System
   const BADGES = [
-    { id: 'helpful-hero', name: 'Helpful Hero', description: 'Multiple replies highly rated', icon: '🏅', class: 'helpful' },
-    { id: 'verified-student', name: 'Verified Student', description: 'Verified student via email domain', icon: '✔️', class: 'verified' },
-    { id: 'early-adopter', name: 'Early Adopter', description: 'Signed up early', icon: '🌟', class: 'early' }
+    { 
+      id: 'first_enquiry', 
+      name: 'First Enquiry', 
+      description: 'Posted your first enquiry',
+      icon: '❓', 
+      class: 'verified',
+      pointsRequired: 0,
+      condition: (stats) => stats.questions >= 1
+    },
+    { 
+      id: 'first_reply', 
+      name: 'First Reply', 
+      description: 'Helped someone with your first reply',
+      icon: '💬', 
+      class: 'helpful',
+      pointsRequired: 0,
+      condition: (stats) => stats.replies >= 1
+    },
+    { 
+      id: 'helpful_hero', 
+      name: 'Helpful Hero', 
+      description: 'Received 10+ helpful votes',
+      icon: '🏅', 
+      class: 'elite',
+      pointsRequired: 50,
+      condition: (stats) => stats.helpfulVotes >= 10
+    },
+    { 
+      id: 'community_expert', 
+      name: 'Community Expert', 
+      description: 'Reached 500+ points',
+      icon: '⭐', 
+      class: 'expert',
+      pointsRequired: 500,
+      condition: (stats) => stats.points >= 500
+    },
+    { 
+      id: 'quick_responder', 
+      name: 'Quick Responder', 
+      description: 'Average response time under 1 hour',
+      icon: '⚡', 
+      class: 'community',
+      pointsRequired: 100,
+      condition: (stats) => stats.avgResponseTime <= 3600
+    },
+    { 
+      id: 'deal_finder', 
+      name: 'Deal Finder', 
+      description: 'Shared 5+ verified deals',
+      icon: '💰', 
+      class: 'community',
+      pointsRequired: 200,
+      condition: (stats) => stats.dealsShared >= 5
+    },
+    { 
+      id: 'early_adopter', 
+      name: 'Early Adopter', 
+      description: 'Joined during early access',
+      icon: '🌟', 
+      class: 'early',
+      pointsRequired: 0,
+      condition: (stats) => stats.isEarlyAdopter
+    },
+    { 
+      id: 'verified_student', 
+      name: 'Verified Student', 
+      description: 'Verified student account',
+      icon: '🎓', 
+      class: 'verified',
+      pointsRequired: 0,
+      condition: (stats) => stats.isVerifiedStudent
+    }
+  ];
+
+  // Level System
+  const LEVELS = [
+    { level: 1, name: 'Novice', pointsRequired: 0, color: '#10B981' },
+    { level: 2, name: 'Contributor', pointsRequired: 100, color: '#3B82F6' },
+    { level: 3, name: 'Expert', pointsRequired: 500, color: '#8B5CF6' },
+    { level: 4, name: 'Guru', pointsRequired: 1000, color: '#F59E0B' },
+    { level: 5, name: 'Legend', pointsRequired: 2500, color: '#EF4444' }
   ];
 
   const avatarUpload = document.getElementById('avatarUpload');
@@ -576,7 +784,13 @@
   const enquiriesCountEl = document.getElementById('enquiriesCount');
   const repliesCountEl = document.getElementById('repliesCount');
   const likesCountEl = document.getElementById('likesCount');
-  const badgesContainer = document.querySelector('.badges-container');
+  const helpfulCountEl = document.getElementById('helpfulCount');
+  const pointsDisplayEl = document.getElementById('pointsDisplay');
+  const currentLevelEl = document.getElementById('currentLevel');
+  const nextLevelEl = document.getElementById('nextLevel');
+  const progressFillEl = document.getElementById('progressFill');
+  const earnedBadgesEl = document.getElementById('earnedBadges');
+  const availableBadgesEl = document.getElementById('availableBadges');
 
   const inputFullName = document.getElementById('inputFullName');
   const inputDepartment = document.getElementById('inputDepartment');
@@ -592,9 +806,20 @@
     level: '',
     bio: '',
     avatarUrl: '',
-    stats: { questions: 0, replies: 0, likes: 0 },
+    stats: { 
+      questions: 0, 
+      replies: 0, 
+      likes: 0, 
+      helpfulVotes: 0,
+      points: 0,
+      dealsShared: 0,
+      avgResponseTime: 0,
+      isEarlyAdopter: false,
+      isVerifiedStudent: true
+    },
     badges: [],
-    accountType: ''
+    accountType: '',
+    joinedDate: new Date().toISOString()
   };
 
   // Theme Toggle
@@ -623,7 +848,7 @@
     }
   });
 
-  // Avatar Upload
+  // Avatar Upload (same as before)
   avatarWrapper.addEventListener('click', () => {
     avatarUpload.click();
   });
@@ -632,13 +857,11 @@
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file.');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('Image size should be less than 5MB.');
       return;
@@ -674,16 +897,122 @@
       userProfile.avatarUrl = data.avatarUrl;
       avatarPreview.src = data.avatarUrl;
 
-      // Save the updated profile with new avatar URL
       await saveUserProfile();
       alert('Avatar updated successfully!');
     } catch (error) {
       console.error('Avatar upload error:', error);
       alert('Failed to upload avatar: ' + error.message);
-      // Revert to previous avatar
       avatarPreview.src = userProfile.avatarUrl || defaultAvatarSrc;
     }
   });
+
+  // Calculate User Level and Progress
+  function calculateLevelAndProgress() {
+    const points = userProfile.stats.points || 0;
+    
+    let currentLevel = LEVELS[0];
+    let nextLevel = LEVELS[1];
+    
+    for (let i = LEVELS.length - 1; i >= 0; i--) {
+      if (points >= LEVELS[i].pointsRequired) {
+        currentLevel = LEVELS[i];
+        nextLevel = LEVELS[i + 1] || null;
+        break;
+      }
+    }
+    
+    const progress = nextLevel 
+      ? Math.min(100, ((points - currentLevel.pointsRequired) / (nextLevel.pointsRequired - currentLevel.pointsRequired)) * 100)
+      : 100;
+    
+    return { currentLevel, nextLevel, progress };
+  }
+
+  // Determine Earned Badges
+  function calculateEarnedBadges() {
+    const earned = [];
+    const available = [];
+    
+    BADGES.forEach(badge => {
+      const isEarned = badge.condition(userProfile.stats);
+      if (isEarned) {
+        earned.push(badge);
+      } else {
+        available.push(badge);
+      }
+    });
+    
+    return { earned, available };
+  }
+
+  // Update Points and Level Display
+  function updatePointsAndLevel() {
+    const { currentLevel, nextLevel, progress } = calculateLevelAndProgress();
+    const points = userProfile.stats.points || 0;
+    
+    pointsDisplayEl.textContent = `${points} Points`;
+    currentLevelEl.textContent = `Level ${currentLevel.level}: ${currentLevel.name}`;
+    
+    if (nextLevel) {
+      nextLevelEl.textContent = `Level ${nextLevel.level}: ${nextLevel.name} (${nextLevel.pointsRequired} points)`;
+      progressFillEl.style.width = `${progress}%`;
+    } else {
+      nextLevelEl.textContent = 'Maximum Level Reached!';
+      progressFillEl.style.width = '100%';
+    }
+    
+    // Update progress bar color based on level
+    progressFillEl.style.background = currentLevel.color;
+  }
+
+  // Update Badges Display
+  function updateBadgesDisplay() {
+    const { earned, available } = calculateEarnedBadges();
+    
+    // Clear existing badges
+    earnedBadgesEl.innerHTML = '';
+    availableBadgesEl.innerHTML = '';
+    
+    // Display earned badges
+    earned.forEach(badge => {
+      const badgeEl = createBadgeElement(badge, true);
+      earnedBadgesEl.appendChild(badgeEl);
+    });
+    
+    // Display available badges (locked)
+    available.forEach(badge => {
+      const badgeEl = createBadgeElement(badge, false);
+      availableBadgesEl.appendChild(badgeEl);
+    });
+    
+    // If no badges earned yet
+    if (earned.length === 0) {
+      earnedBadgesEl.innerHTML = '<p style="color: var(--text-muted); text-align: center; width: 100%;">No badges earned yet. Start participating to earn badges!</p>';
+    }
+  }
+
+  // Create Badge Element
+  function createBadgeElement(badge, isEarned) {
+    const badgeEl = document.createElement('div');
+    badgeEl.className = `badge ${badge.class} ${!isEarned ? 'locked' : ''}`;
+    badgeEl.setAttribute('title', `${badge.name}: ${badge.description}${!isEarned ? ' (Locked)' : ''}`);
+    badgeEl.setAttribute('role', 'listitem');
+    
+    if (!isEarned) {
+      badgeEl.style.opacity = '0.6';
+      badgeEl.style.filter = 'grayscale(0.8)';
+    }
+    
+    badgeEl.innerHTML = `
+      <span class="badge-icon">${badge.icon}</span>
+      <div class="badge-info">
+        <span class="badge-name">${badge.name}</span>
+        <span class="badge-description">${isEarned ? badge.description : 'Locked'}</span>
+      </div>
+    `;
+    
+    return badgeEl;
+  }
 
   // Update Profile Display
   function updateProfileDisplay() {
@@ -694,23 +1023,13 @@
     enquiriesCountEl.textContent = userProfile.stats?.questions || 0;
     repliesCountEl.textContent = userProfile.stats?.replies || 0;
     likesCountEl.textContent = userProfile.stats?.likes || 0;
+    helpfulCountEl.textContent = userProfile.stats?.helpfulVotes || 0;
 
     avatarPreview.src = userProfile.avatarUrl || defaultAvatarSrc;
 
-    badgesContainer.innerHTML = '';
-    if (userProfile.badges && userProfile.badges.length) {
-      userProfile.badges.forEach(badgeId => {
-        const badge = BADGES.find(b => b.id === badgeId);
-        if (badge) {
-          const badgeSpan = document.createElement('span');
-          badgeSpan.className = `badge ${badge.class}`;
-          badgeSpan.setAttribute('title', `${badge.name}: ${badge.description}`);
-          badgeSpan.setAttribute('role', 'listitem');
-          badgeSpan.textContent = `${badge.icon} ${badge.name}`;
-          badgesContainer.appendChild(badgeSpan);
-        }
-      });
-    }
+    // Update points and badges
+    updatePointsAndLevel();
+    updateBadgesDisplay();
 
     if (userProfile.accountType) {
       let friendlyName = '';
@@ -748,7 +1067,7 @@
       userProfile.department = userProfile.school || '';
       userProfile.level = userProfile.year || '';
 
-      // Calculate statistics
+      // Calculate statistics and points
       await calculateUserStatistics(email);
       
       updateProfileDisplay();
@@ -760,7 +1079,17 @@
         level: '',
         bio: '',
         avatarUrl: '',
-        stats: { questions: 0, replies: 0, likes: 0 },
+        stats: { 
+          questions: 0, 
+          replies: 0, 
+          likes: 0, 
+          helpfulVotes: 0,
+          points: 0,
+          dealsShared: 0,
+          avgResponseTime: 0,
+          isEarlyAdopter: false,
+          isVerifiedStudent: true
+        },
         badges: [],
         accountType: ''
       };
@@ -768,13 +1097,19 @@
     }
   }
 
-  // Calculate User Statistics - Only count replies to other users' enquiries
+  // Calculate User Statistics and Points
   async function calculateUserStatistics(email) {
     try {
       // Fetch all enquiries to calculate statistics
-      const res = await fetch('http://localhost:5000/enquiries');
-      if (!res.ok) throw new Error('Failed to fetch enquiries');
-      const allEnquiries = await res.json();
+      const [enquiriesRes, dealsRes] = await Promise.all([
+        fetch('http://localhost:5000/enquiries'),
+        fetch('http://localhost:5000/api/deals')
+      ]);
+      
+      if (!enquiriesRes.ok || !dealsRes.ok) throw new Error('Failed to fetch data');
+      
+      const allEnquiries = await enquiriesRes.json();
+      const allDeals = await dealsRes.json();
       
       // Count enquiries posted by the user
       const userEnquiries = allEnquiries.filter(e => e.postedBy === userProfile.fullname);
@@ -783,6 +1118,9 @@
       // Count replies and likes from the user - ONLY to other users' enquiries
       let totalReplies = 0;
       let totalLikes = 0;
+      let totalHelpfulVotes = 0;
+      let totalResponseTime = 0;
+      let responseCount = 0;
       
       allEnquiries.forEach(enquiry => {
         // Only count replies to enquiries NOT posted by the current user
@@ -791,6 +1129,15 @@
             if (reply.replyBy === userProfile.fullname) {
               totalReplies++;
               totalLikes += reply.likes || 0;
+              totalHelpfulVotes += reply.helpfulCount || 0;
+              
+              // Calculate response time if timestamps are available
+              if (enquiry.createdAt && reply.createdAt) {
+                const enquiryTime = new Date(enquiry.createdAt);
+                const replyTime = new Date(reply.createdAt);
+                totalResponseTime += (replyTime - enquiryTime) / 1000; // Convert to seconds
+                responseCount++;
+              }
             }
           });
         }
@@ -798,10 +1145,47 @@
       
       userProfile.stats.replies = totalReplies;
       userProfile.stats.likes = totalLikes;
+      userProfile.stats.helpfulVotes = totalHelpfulVotes;
+      userProfile.stats.avgResponseTime = responseCount > 0 ? totalResponseTime / responseCount : 0;
+      
+      // Count deals shared by user
+      const userDeals = allDeals.filter(deal => deal.email === email);
+      userProfile.stats.dealsShared = userDeals.length;
+      
+      // Calculate total points based on activities
+      userProfile.stats.points = calculateTotalPoints();
       
     } catch (error) {
       console.error('Error calculating statistics:', error);
     }
+  }
+
+  // Calculate Total Points
+  function calculateTotalPoints() {
+    const stats = userProfile.stats;
+    let points = 0;
+    
+    // Points for activities
+    points += stats.questions * 10;        // 10 points per enquiry
+    points += stats.replies * 5;           // 5 points per reply
+    points += stats.likes * 2;             // 2 points per like received
+    points += stats.helpfulVotes * 10;     // 10 points per helpful vote
+    points += stats.dealsShared * 15;      // 15 points per deal shared
+    
+    // Bonus points for quick responses (under 1 hour average)
+    if (stats.avgResponseTime > 0 && stats.avgResponseTime <= 3600) {
+      points += 50;
+    }
+    
+    // Early adopter bonus (joined before a certain date)
+    const joinDate = new Date(userProfile.joinedDate);
+    const earlyAdopterCutoff = new Date('2024-01-01');
+    if (joinDate < earlyAdopterCutoff) {
+      points += 100;
+      userProfile.stats.isEarlyAdopter = true;
+    }
+    
+    return points;
   }
 
   // Save User Profile
@@ -840,7 +1224,7 @@
     }
   }
 
-  // Edit Profile Form Handling
+  // Edit Profile Form Handling (same as before)
   editBtn.addEventListener('click', () => {
     inputFullName.value = userProfile.fullname || '';
     inputDepartment.value = userProfile.department || '';
