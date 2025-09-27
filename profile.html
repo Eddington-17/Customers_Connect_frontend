@@ -1166,11 +1166,11 @@
     let points = 0;
     
     // Points for activities
-    points += stats.questions * 10;        // 10 points per enquiry
-    points += stats.replies * 5;           // 5 points per reply
+    points += stats.questions * 5;        // 5 points per enquiry
+    points += stats.replies * 2;           // 2 points per reply
     points += stats.likes * 2;             // 2 points per like received
-    points += stats.helpfulVotes * 10;     // 10 points per helpful vote
-    points += stats.dealsShared * 15;      // 15 points per deal shared
+    points += stats.helpfulVotes * 5;     // 5 points per helpful vote
+    points += stats.dealsShared * 5;      // 5 points per deal shared
     
     // Bonus points for quick responses (under 1 hour average)
     if (stats.avgResponseTime > 0 && stats.avgResponseTime <= 3600) {
