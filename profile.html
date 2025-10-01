@@ -191,6 +191,16 @@
     box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
   }
 
+  .avatar-wrapper.view-mode {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .avatar-wrapper.view-mode:hover {
+    transform: none;
+    box-shadow: 0 6px 18px rgba(67, 97, 238, 0.2);
+  }
+
   #avatarPreview {
     width: 100%;
     height: 100%;
@@ -214,6 +224,10 @@
   .upload-label:hover {
     background: var(--bg-primary);
     color: var(--primary-dark);
+  }
+
+  .upload-label.view-mode {
+    display: none;
   }
 
   .profile-right {
@@ -252,6 +266,18 @@
     display: inline-flex;
     align-items: center;
     margin-bottom: var(--spacing-md);
+  }
+
+  /* View Mode Indicator */
+  .view-mode-indicator {
+    background: var(--warning);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+    font-weight: 600;
+    display: none;
   }
 
   /* Points System */
@@ -435,6 +461,10 @@
     box-shadow: 0 4px 12px var(--shadow-hover);
   }
 
+  #editProfileBtn.view-mode {
+    display: none;
+  }
+
   form.profile-edit {
     display: none;
     flex-direction: column;
@@ -587,6 +617,10 @@
     </aside>
 
     <section class="profile-right">
+      <div class="view-mode-indicator" id="viewModeIndicator">
+        🔒 Viewing User Profile - Read Only
+      </div>
+      
       <div class="profile-info" aria-live="polite">
         <h2 id="displayName" tabindex="0">User Name</h2>
         <p class="bio" id="displayBio">This is your bio or motto.</p>
@@ -791,6 +825,8 @@
   const progressFillEl = document.getElementById('progressFill');
   const earnedBadgesEl = document.getElementById('earnedBadges');
   const availableBadgesEl = document.getElementById('availableBadges');
+  const viewModeIndicator = document.getElementById('viewModeIndicator');
+  const uploadLabel = document.querySelector('.upload-label');
 
   const inputFullName = document.getElementById('inputFullName');
   const inputDepartment = document.getElementById('inputDepartment');
@@ -822,6 +858,29 @@
     joinedDate: new Date().toISOString()
   };
 
+  // View mode variables
+  let isViewMode = false;
+  let viewedUserEmail = null;
+
+  // Check if we're in view mode
+  function checkViewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    viewedUserEmail = urlParams.get('view');
+    isViewMode = Boolean(viewedUserEmail);
+    
+    if (isViewMode) {
+      console.log('Viewing profile for:', viewedUserEmail);
+      // Enable view mode UI changes
+      viewModeIndicator.style.display = 'block';
+      editBtn.classList.add('view-mode');
+      uploadLabel.classList.add('view-mode');
+      avatarWrapper.classList.add('view-mode');
+      
+      // Update page title
+      document.title = `Customer's Connect - User Profile`;
+    }
+  }
+
   // Theme Toggle
   const darkToggle = document.getElementById('darkToggle');
   function loadTheme() {
@@ -848,12 +907,15 @@
     }
   });
 
-  // Avatar Upload (same as before)
+  // Avatar Upload (only in edit mode)
   avatarWrapper.addEventListener('click', () => {
+    if (isViewMode) return;
     avatarUpload.click();
   });
 
   avatarUpload.addEventListener('change', async e => {
+    if (isViewMode) return;
+    
     const file = e.target.files[0];
     if (!file) return;
 
@@ -1051,11 +1113,17 @@
 
   // Load User Profile with Statistics
   async function loadUserProfile() {
-    const email = localStorage.getItem('email');
-    if (!email) {
-      alert('You must be logged in!');
-      window.location.href = 'index.html';
-      return;
+    let email;
+    
+    if (isViewMode && viewedUserEmail) {
+      email = viewedUserEmail;
+    } else {
+      email = localStorage.getItem('email');
+      if (!email) {
+        alert('You must be logged in!');
+        window.location.href = 'index.html';
+        return;
+      }
     }
     
     try {
@@ -1067,19 +1135,12 @@
       userProfile.department = userProfile.school || '';
       userProfile.level = userProfile.year || '';
 
-      // Calculate statistics and points
-      await calculateUserStatistics(email);
-      
-      updateProfileDisplay();
-    } catch (err) {
-      console.error('Error loading profile:', err);
-      userProfile = {
-        fullname: localStorage.getItem('fullname') || 'User Name',
-        department: '',
-        level: '',
-        bio: '',
-        avatarUrl: '',
-        stats: { 
+      // Only calculate statistics for the current user (not in view mode)
+      if (!isViewMode) {
+        await calculateUserStatistics(email);
+      } else {
+        // For viewed users, use the stats from their profile
+        userProfile.stats = userProfile.stats || { 
           questions: 0, 
           replies: 0, 
           likes: 0, 
@@ -1089,11 +1150,59 @@
           avgResponseTime: 0,
           isEarlyAdopter: false,
           isVerifiedStudent: true
-        },
-        badges: [],
-        accountType: ''
-      };
+        };
+      }
+      
       updateProfileDisplay();
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      if (isViewMode) {
+        // If viewing another user's profile fails, show a message
+        userProfile = {
+          fullname: 'User Not Found',
+          department: '',
+          level: '',
+          bio: 'This user profile could not be loaded.',
+          avatarUrl: '',
+          stats: { 
+            questions: 0, 
+            replies: 0, 
+            likes: 0, 
+            helpfulVotes: 0,
+            points: 0,
+            dealsShared: 0,
+            avgResponseTime: 0,
+            isEarlyAdopter: false,
+            isVerifiedStudent: false
+          },
+          badges: [],
+          accountType: ''
+        };
+        updateProfileDisplay();
+      } else {
+        // For current user, use default profile
+        userProfile = {
+          fullname: localStorage.getItem('fullname') || 'User Name',
+          department: '',
+          level: '',
+          bio: '',
+          avatarUrl: '',
+          stats: { 
+            questions: 0, 
+            replies: 0, 
+            likes: 0, 
+            helpfulVotes: 0,
+            points: 0,
+            dealsShared: 0,
+            avgResponseTime: 0,
+            isEarlyAdopter: false,
+            isVerifiedStudent: true
+          },
+          badges: [],
+          accountType: ''
+        };
+        updateProfileDisplay();
+      }
     }
   }
 
@@ -1166,15 +1275,15 @@
     let points = 0;
     
     // Points for activities
-    points += stats.questions * 5;        // 5 points per enquiry
-    points += stats.replies * 2;           // 2 points per reply
+    points += stats.questions * 2;        // 2 points per enquiry
+    points += stats.replies * 1;           // 1 points per reply
     points += stats.likes * 2;             // 2 points per like received
-    points += stats.helpfulVotes * 5;     // 5 points per helpful vote
+    points += stats.helpfulVotes * 3;     // 3 points per helpful vote
     points += stats.dealsShared * 5;      // 5 points per deal shared
     
     // Bonus points for quick responses (under 1 hour average)
     if (stats.avgResponseTime > 0 && stats.avgResponseTime <= 3600) {
-      points += 50;
+      points += 7;
     }
     
     // Early adopter bonus (joined before a certain date)
@@ -1224,7 +1333,7 @@
     }
   }
 
-  // Edit Profile Form Handling (same as before)
+  // Edit Profile Form Handling
   editBtn.addEventListener('click', () => {
     inputFullName.value = userProfile.fullname || '';
     inputDepartment.value = userProfile.department || '';
@@ -1275,15 +1384,15 @@
     editBtn.disabled = false;
   });
 
-  // Socket.io for real-time updates
+  // Socket.io for real-time updates (only for current user)
   const socket = io('http://localhost:5000');
   const userEmail = localStorage.getItem('email');
-  if (userEmail) {
+  if (userEmail && !isViewMode) {
     socket.emit('join', userEmail);
   }
 
   socket.on('profileUpdated', (profile) => {
-    if (!profile) return;
+    if (!profile || isViewMode) return;
     userProfile = profile;
     userProfile.department = profile.school || '';
     userProfile.level = profile.year || '';
@@ -1293,6 +1402,7 @@
   // Initialize on page load
   window.addEventListener('DOMContentLoaded', () => {
     loadTheme();
+    checkViewMode(); // Check if we're in view mode
     loadUserProfile();
   });
 </script>

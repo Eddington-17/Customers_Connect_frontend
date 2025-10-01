@@ -157,35 +157,73 @@
       gap: var(--spacing-md);
     }
 
-    .view-toggle {
-      display: flex;
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
-      padding: 0.25rem;
-      box-shadow: 0 2px 8px var(--shadow);
-      border: 1px solid var(--border);
+    /* Updated View Toggle - Dropdown Style */
+    .view-toggle-container {
+      position: relative;
+      display: inline-block;
     }
 
-    .view-toggle button {
-      padding: 0.5rem 1.5rem;
-      border: none;
-      background: transparent;
-      border-radius: var(--radius-sm);
+    .view-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.5rem;
       cursor: pointer;
       font-weight: 600;
       transition: var(--transition);
-      color: var(--text-secondary);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
-    .view-toggle button.active {
+    .view-toggle-btn:hover {
       background: var(--primary);
       color: white;
-      box-shadow: 0 2px 4px var(--shadow);
+      border-color: var(--primary);
     }
 
-    .view-toggle button:not(.active):hover {
-      background: var(--bg-primary);
+    .view-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 0.5rem;
+      z-index: 1000;
+      display: none;
+      margin-top: 0.25rem;
+      min-width: 200px;
+    }
+
+    .view-dropdown.open {
+      display: block;
+    }
+
+    .view-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
       color: var(--text-primary);
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .view-dropdown button:hover {
+      background: var(--bg-primary);
+    }
+
+    .view-dropdown button.active {
+      background: var(--primary);
+      color: white;
     }
 
     .category-filter {
@@ -809,13 +847,15 @@
       height: 200px;
     }
 
+    /* Updated: Smaller, more mature buttons */
     .enquiry-header button {
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.8rem;
       border: none;
       border-radius: var(--radius-sm);
       cursor: pointer;
       font-weight: 500;
       transition: var(--transition);
+      font-size: 0.85rem;
     }
 
     .thanks-btn {
@@ -825,6 +865,16 @@
 
     .thanks-btn:hover {
       background: #3ab0d9;
+    }
+
+    .delete-enquiry-btn {
+      background: var(--danger);
+      color: white;
+      margin-left: 0.5rem;
+    }
+
+    .delete-enquiry-btn:hover {
+      background: #d32f2f;
     }
 
     .thanked .reply-form {
@@ -970,6 +1020,231 @@
       transform: translateY(-2px);
     }
 
+    /* Leaderboard Styles */
+    .leaderboard-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      box-shadow: 0 4px 12px var(--shadow);
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    .leaderboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .leaderboard-title {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-sm);
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .leaderboard-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .leaderboard-rank {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 700;
+      margin-right: var(--spacing-sm);
+      flex-shrink: 0;
+    }
+
+    .rank-1 {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color: #000;
+    }
+
+    .rank-2 {
+      background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+      color: #000;
+    }
+
+    .rank-3 {
+      background: linear-gradient(135deg, #CD7F32, #A66A2A);
+      color: #000;
+    }
+
+    .rank-other {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .leaderboard-user {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: var(--spacing-sm);
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-name:hover {
+      color: var(--primary);
+    }
+
+    .user-points {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-sm);
+      margin-top: 2px;
+    }
+
+    .badge-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Reputation indicator styles */
+    .reputation-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      font-size: var(--font-size-sm);
+      vertical-align: middle;
+    }
+
+    .points-badge {
+      background: var(--primary);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    .level-badge {
+      background: var(--success);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    /* Profile link styles */
+    .user-profile-link {
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .user-profile-link:hover {
+      color: var(--primary);
+    }
+
+    /* Custom Intro.js styling */
+    .introjs-tooltip {
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .introjs-tooltip-header {
+      background: var(--primary);
+      color: white;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .introjs-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 1rem;
+      margin: 0 0.25rem;
+      transition: var(--transition);
+    }
+
+    .introjs-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .introjs-skipbutton {
+      background: var(--text-muted);
+    }
+
+    .introjs-skipbutton:hover {
+      background: var(--danger);
+    }
+
+    .introjs-bullets ul li a {
+      background: var(--border);
+    }
+
+    .introjs-bullets ul li a.active {
+      background: var(--primary);
+    }
+
+    .introjs-arrow {
+      border-color: var(--bg-card);
+    }
+
     @media (max-width: 968px) {
       .dashboard-layout {
         grid-template-columns: 1fr;
@@ -1032,6 +1307,19 @@
       .sticky-nav {
         top: 120px;
       }
+
+      .view-toggle-container {
+        width: 100%;
+      }
+
+      .view-toggle-btn {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .view-dropdown {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -1056,11 +1344,19 @@
   <!-- Sticky Navigation -->
   <div class="sticky-nav">
     <div class="sticky-nav-content">
-      <nav class="view-toggle" aria-label="Toggle enquiry views">
-        <button id="allEnquiriesBtn" class="active" aria-pressed="true">All Enquiries</button>
-        <button id="myEnquiriesBtn" aria-pressed="false">My Enquiries</button>
-        <button id="dealsBtn" aria-pressed="false">Deals</button>
-      </nav>
+      <!-- Updated: Dropdown menu for navigation -->
+      <div class="view-toggle-container">
+        <button class="view-toggle-btn" id="viewToggleBtn">
+          <span id="currentViewText">All Enquiries</span>
+          <span style="font-size:0.8em;">▼</span>
+        </button>
+        <div class="view-dropdown" id="viewDropdown">
+          <button data-view="all" class="active">All Enquiries</button>
+          <button data-view="mine">My Enquiries</button>
+          <button data-view="leaderboard">🏆 Leaderboard</button>
+          <button data-view="deals">Deals</button>
+        </div>
+      </div>
       
       <div class="category-filter" id="categoryFilter" style="display: none;">
         <label for="dealCategoryFilter">Filter by:</label>
@@ -1092,6 +1388,17 @@
   </div>
 
   <main>
+    <!-- Leaderboard Section -->
+    <section class="leaderboard-section" id="leaderboardSection">
+      <div class="leaderboard-header">
+        <h3 class="leaderboard-title">🏆 Community Leaderboard</h3>
+        <div class="user-points">Your Points: <span id="userPoints">0</span></div>
+      </div>
+      <div class="leaderboard-list" id="leaderboardList">
+        <!-- Leaderboard will be populated here -->
+      </div>
+    </section>
+
     <div class="dashboard-layout">
       <div class="main-content">
         <section class="post-enquiry" aria-label="Post a new enquiry" id="postEnquirySection">
@@ -1196,6 +1503,19 @@
     let selectedDealCategory = 'all';
     const reportedEnquiries = new Set();
     
+    // Leaderboard data
+    let leaderboardData = [];
+    let userPoints = 0;
+    let userLevel = 1;
+    
+    // Badge definitions
+    const badges = {
+      'helper': { name: 'Helper', icon: '🤝', minPoints: 50 },
+      'expert': { name: 'Expert', icon: '⭐', minPoints: 150 },
+      'guru': { name: 'Guru', icon: '🧠', minPoints: 300 },
+      'champion': { name: 'Champion', icon: '🏆', minPoints: 500 }
+    };
+    
     // Deal categories
     const dealCategories = {
       'technology': 'Technology',
@@ -1214,9 +1534,6 @@
     
     const darkToggle = document.getElementById('darkToggle');
     const logoutBtn = document.getElementById('logoutBtn');
-    const allEnquiriesBtn = document.getElementById('allEnquiriesBtn');
-    const myEnquiriesBtn = document.getElementById('myEnquiriesBtn');
-    const dealsBtn = document.getElementById('dealsBtn');
     const enquiryListEl = document.getElementById('enquiryList');
     const enquiryInputEl = document.getElementById('enquiryInput');
     const postEnquiryBtn = document.getElementById('postEnquiryBtn');
@@ -1241,6 +1558,17 @@
     const dealSubmitBtn = document.getElementById('dealSubmitBtn');
     const dealIdInput = document.getElementById('dealId');
     
+    // Leaderboard elements
+    const leaderboardSection = document.getElementById('leaderboardSection');
+    const leaderboardList = document.getElementById('leaderboardList');
+    const userPointsEl = document.getElementById('userPoints');
+    
+    // Updated: Dropdown navigation elements
+    const viewToggleBtn = document.getElementById('viewToggleBtn');
+    const viewDropdown = document.getElementById('viewDropdown');
+    const currentViewText = document.getElementById('currentViewText');
+    const viewDropdownButtons = document.querySelectorAll('.view-dropdown button');
+
     // Socket event handlers
     socket.on('connect', () => {
       console.log('Socket.IO connected! Socket ID:', socket.id);
@@ -1359,45 +1687,56 @@
       });
     });
 
+    // Updated: Dropdown navigation functionality
+    viewToggleBtn.addEventListener('click', () => {
+      viewDropdown.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!viewToggleBtn.contains(e.target) && !viewDropdown.contains(e.target)) {
+        viewDropdown.classList.remove('open');
+      }
+    });
+
     // View toggle handlers
-    allEnquiriesBtn.onclick = () => switchView('all');
-    myEnquiriesBtn.onclick = () => switchView('mine');
-    dealsBtn.onclick = () => switchView('deals');
+    viewDropdownButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.getAttribute('data-view');
+        switchView(view);
+        viewDropdown.classList.remove('open');
+        
+        // Update active state
+        viewDropdownButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update button text
+        currentViewText.textContent = btn.textContent;
+      });
+    });
 
     function switchView(view) {
       currentView = view;
-      updateViewToggle();
+      
+      // Hide all sections first
+      document.getElementById('postEnquirySection').style.display = 'none';
+      document.getElementById('enquiryList').style.display = 'none';
+      document.getElementById('dealsSidebar').style.display = 'none';
+      leaderboardSection.style.display = 'none';
+      categoryFilter.style.display = 'none';
       
       if (view === 'deals') {
-        document.getElementById('postEnquirySection').style.display = 'none';
-        document.getElementById('enquiryList').style.display = 'none';
         document.getElementById('dealsSidebar').style.display = 'block';
         categoryFilter.style.display = 'flex';
         fetchDeals();
+      } else if (view === 'leaderboard') {
+        leaderboardSection.style.display = 'block';
+        fetchLeaderboard();
       } else {
         document.getElementById('postEnquirySection').style.display = 'block';
         document.getElementById('enquiryList').style.display = 'block';
         document.getElementById('dealsSidebar').style.display = 'block';
-        categoryFilter.style.display = 'none';
         fetchEnquiries();
-      }
-    }
-
-    function updateViewToggle() {
-      [allEnquiriesBtn, myEnquiriesBtn, dealsBtn].forEach(btn => {
-        btn.classList.remove('active');
-        btn.setAttribute('aria-pressed', 'false');
-      });
-      
-      if (currentView === 'all') {
-        allEnquiriesBtn.classList.add('active');
-        allEnquiriesBtn.setAttribute('aria-pressed', 'true');
-      } else if (currentView === 'mine') {
-        myEnquiriesBtn.classList.add('active');
-        myEnquiriesBtn.setAttribute('aria-pressed', 'true');
-      } else {
-        dealsBtn.classList.add('active');
-        dealsBtn.setAttribute('aria-pressed', 'true');
       }
     }
 
@@ -1679,9 +2018,86 @@
 
     retryBtn.onclick = fetchEnquiries;
 
-    // The rest of your existing JavaScript code for enquiries would go here
-    // (I've kept the core structure but removed some redundant code for brevity)
-async function handleReportClick(enquiryId, button, dropdown) {
+    // Fetch leaderboard data
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch('http://localhost:5000/api/leaderboard');
+        if (!res.ok) throw new Error('Failed to fetch leaderboard');
+        leaderboardData = await res.json();
+        renderLeaderboard();
+        
+        // Update user's own points
+        const currentUser = leaderboardData.find(user => user.email === userEmail);
+        if (currentUser) {
+          userPoints = currentUser.points || 0;
+          userLevel = calculateLevel(userPoints);
+          userPointsEl.textContent = userPoints;
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        leaderboardList.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:var(--spacing-md);">Error loading leaderboard</p>';
+      }
+    }
+
+    // Calculate user level based on points
+    function calculateLevel(points) {
+      return Math.floor(points / 100) + 1;
+    }
+
+    // Get user's highest badge
+    function getHighestBadge(points, userBadges = []) {
+      let highestBadge = null;
+      for (const [key, badge] of Object.entries(badges)) {
+        if (points >= badge.minPoints) {
+          highestBadge = badge;
+        }
+      }
+      return highestBadge;
+    }
+
+    // Render leaderboard
+    function renderLeaderboard() {
+      leaderboardList.innerHTML = '';
+      
+      if (!leaderboardData || leaderboardData.length === 0) {
+        leaderboardList.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:var(--spacing-md);">No leaderboard data available yet.</p>';
+        return;
+      }
+
+      leaderboardData.forEach((user, index) => {
+        const rank = index + 1;
+        const userLevel = calculateLevel(user.points || 0);
+        const highestBadge = getHighestBadge(user.points || 0, user.badges || []);
+        
+        const leaderboardItem = document.createElement('div');
+        leaderboardItem.className = 'leaderboard-item';
+        
+        leaderboardItem.innerHTML = `
+          <div class="leaderboard-rank ${rank <= 3 ? `rank-${rank}` : 'rank-other'}">
+            ${rank}
+          </div>
+          <div class="leaderboard-user">
+            <div class="user-avatar">${user.fullname ? user.fullname.charAt(0).toUpperCase() : 'U'}</div>
+            <div class="user-info">
+              <a href="profile.html?view=${user.email}" class="user-name">
+                ${user.fullname || 'Unknown User'}
+              </a>
+              <div class="user-points">${user.points || 0} points • Level ${userLevel}</div>
+              ${highestBadge ? `
+                <div class="user-badge">
+                  <span class="badge-icon">${highestBadge.icon}</span>
+                  ${highestBadge.name}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        leaderboardList.appendChild(leaderboardItem);
+      });
+    }
+
+    async function handleReportClick(enquiryId, button, dropdown) {
       if (reportedEnquiries.has(enquiryId)) {
         alert('You have already reported this enquiry.');
         return;
@@ -1756,9 +2172,22 @@ async function handleReportClick(enquiryId, button, dropdown) {
 
         headerEl.appendChild(titleDiv);
 
+        // Get user data for reputation indicator
+        const userData = leaderboardData.find(user => user.fullname === enquiry.postedBy) || {};
+        const userPoints = userData.points || 0;
+        const userLevel = calculateLevel(userPoints);
+        const highestBadge = getHighestBadge(userPoints, userData.badges || []);
+
         const userLabel = document.createElement('span');
         userLabel.className = 'poster';
-        userLabel.innerHTML = `(posted by <span class="posted-user">${enquiry.postedBy}</span>)`;
+        userLabel.innerHTML = `(posted by 
+          <a href="profile.html?view=${enquiry.email || ''}" class="user-profile-link">
+            <span class="posted-user">${enquiry.postedBy}</span>
+            <span class="reputation-indicator">
+              <span class="points-badge" title="${userPoints} points">${userPoints}</span>
+              ${highestBadge ? `<span class="badge-icon" title="${highestBadge.name}">${highestBadge.icon}</span>` : ''}
+            </span>
+          </a>)`;
         headerEl.appendChild(userLabel);
 
         const toggleIcon = document.createElement('span');
@@ -1801,20 +2230,16 @@ async function handleReportClick(enquiryId, button, dropdown) {
           headerEl.appendChild(dropdownMenu);
         }
 
-        // Original delete and thanks buttons for poster
+        // Updated: Smaller, more mature delete and thanks buttons for poster
         if (enquiry.postedBy === userFullname) {
-          const deleteBtn = document.createElement('button');
-          deleteBtn.textContent = 'Delete';
-          deleteBtn.style.background = 'var(--danger)';
-          deleteBtn.style.color = 'white';
-          deleteBtn.style.border = 'none';
-          deleteBtn.style.padding = '0.5rem 1rem';
-          deleteBtn.style.borderRadius = 'var(--radius-sm)';
-          deleteBtn.style.cursor = 'pointer';
-          deleteBtn.style.fontWeight = '600';
-          deleteBtn.style.marginLeft = '10px';
-          deleteBtn.style.transition = 'var(--transition)';
+          const buttonContainer = document.createElement('div');
+          buttonContainer.style.display = 'flex';
+          buttonContainer.style.gap = '0.5rem';
+          buttonContainer.style.alignItems = 'center';
 
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-enquiry-btn';
+          deleteBtn.textContent = 'Delete';
           deleteBtn.onclick = async e => {
             e.stopPropagation();
             if (!confirm('Are you sure you want to delete this enquiry?')) return;
@@ -1833,12 +2258,11 @@ async function handleReportClick(enquiryId, button, dropdown) {
               alert('Error deleting enquiry. Please try again.');
             }
           };
-          headerEl.appendChild(deleteBtn);
 
           const thanksBtn = document.createElement('button');
           thanksBtn.className = 'thanks-btn';
           thanksBtn.title = 'Mark enquiry as resolved';
-          thanksBtn.textContent = enquiry.thanked ? 'Resolved ✅' : 'Mark Resolved';
+          thanksBtn.textContent = enquiry.thanked ? 'Resolved' : 'Mark Resolved';
 
           thanksBtn.onclick = async ev => {
             ev.stopPropagation();
@@ -1854,14 +2278,17 @@ async function handleReportClick(enquiryId, button, dropdown) {
                 return;
               }
               enquiry.thanked = !enquiry.thanked;
-              thanksBtn.textContent = enquiry.thanked ? 'Resolved ✅' : 'Mark Resolved';
+              thanksBtn.textContent = enquiry.thanked ? 'Resolved' : 'Mark Resolved';
               enquiryEl.classList.toggle('thanked', enquiry.thanked);
               renderEnquiries();
             } catch {
               alert('Error marking enquiry as resolved. Please try again.');
             }
           };
-          headerEl.appendChild(thanksBtn);
+
+          buttonContainer.appendChild(thanksBtn);
+          buttonContainer.appendChild(deleteBtn);
+          headerEl.appendChild(buttonContainer);
         }
 
         enquiryEl.appendChild(headerEl);
@@ -1897,9 +2324,23 @@ async function handleReportClick(enquiryId, button, dropdown) {
             replyEl.className = 'reply-item';
             replyEl.setAttribute('data-reply-id', reply.replyId);
 
+            // Get user data for reputation indicator
+            const replyUserData = leaderboardData.find(user => user.fullname === reply.replyBy) || {};
+            const replyUserPoints = replyUserData.points || 0;
+            const replyUserLevel = calculateLevel(replyUserPoints);
+            const replyHighestBadge = getHighestBadge(replyUserPoints, replyUserData.badges || []);
+
             const replyTextEl = document.createElement('div');
             replyTextEl.className = 'reply-text';
-            replyTextEl.textContent = `${reply.replyBy}: ${reply.text}`;
+            replyTextEl.innerHTML = `
+              <a href="profile.html?view=${reply.email || ''}" class="user-profile-link">
+                <strong>${reply.replyBy}</strong>
+                <span class="reputation-indicator">
+                  <span class="points-badge" title="${replyUserPoints} points">${replyUserPoints}</span>
+                  ${replyHighestBadge ? `<span class="badge-icon" title="${replyHighestBadge.name}">${replyHighestBadge.icon}</span>` : ''}
+                </span>
+              </a>: ${reply.text}
+            `;
             replyEl.appendChild(replyTextEl);
 
             // Helpful button (new feature)
@@ -2163,50 +2604,97 @@ async function handleReportClick(enquiryId, button, dropdown) {
         alert('Failed to post enquiry. Please try again.');
       }
     };
+    
     // Initialize
     imagePreview.style.display = 'none';
     switchView('all');
     fetchDeals();
+    fetchLeaderboard(); // Initialize leaderboard data
 
-    // Tour functionality
+    // Enhanced Tour functionality
     const startTourBtn = document.getElementById('startTourBtn');
     startTourBtn.addEventListener('click', () => {
-      introJs()
-        .setOptions({
-          steps: [
-            {
-              intro: "Welcome to Customer's Connect! Let's take a quick tour."
-            },
-            {
-              element: document.querySelector('.sticky-nav'),
-              intro: "This navigation stays with you as you scroll. Switch between views and filter content easily.",
-              position: 'bottom'
-            },
-            {
-              element: document.querySelector('.post-enquiry'),
-              intro: "Use this section to post a new enquiry. You can categorize it and add a product image!",
-              position: 'top'
-            },
-            {
-              element: document.getElementById('dealsSidebar'),
-              intro: "Check out hot deals shared by the community. You can filter by category and manage your own deals.",
-              position: 'left'
-            }
-          ],
-          showStepNumbers: true,
-          exitOnEsc: true,
-          exitOnOverlayClick: false,
-          nextLabel: 'Next >',
-          prevLabel: '< Prev',
-          skipLabel: 'Skip',
-          doneLabel: 'Finish'
-        })
-        .start();
+      introJs().setOptions({
+        steps: [
+          {
+            intro: `
+              <div style="text-align: center;">
+                <h2 style="margin-bottom: 10px; color: var(--primary);">🏆 Welcome to Customer's Connect!</h2>
+                <p>Let's take a quick tour to explore all the amazing features we have for you.</p>
+              </div>
+            `
+          },
+          {
+            element: document.querySelector('.view-toggle-container'),
+            intro: `
+              <div style="text-align: center;">
+                <h3 style="margin-bottom: 8px;">📱 Navigation Menu</h3>
+                <p>Use this dropdown to switch between different views:</p>
+                <ul style="text-align: left; margin-top: 10px;">
+                  <li><strong>All Enquiries:</strong> See what everyone is asking</li>
+                  <li><strong>My Enquiries:</strong> Track your own questions</li>
+                  <li><strong>Leaderboard:</strong> Check top contributors</li>
+                  <li><strong>Deals:</strong> Discover amazing offers</li>
+                </ul>
+              </div>
+            `,
+            position: 'bottom'
+          },
+          {
+            element: document.querySelector('.post-enquiry'),
+            intro: `
+              <div style="text-align: center;">
+                <h3 style="margin-bottom: 8px;">💬 Post Enquiries</h3>
+                <p>Ask questions about products, prices, availability, or get recommendations from our community.</p>
+                <p><small>💡 <em>You can even add product images for better help!</em></small></p>
+              </div>
+            `,
+            position: 'top'
+          },
+          {
+            element: document.getElementById('dealsSidebar'),
+            intro: `
+              <div style="text-align: center;">
+                <h3 style="margin-bottom: 8px;">🔥 Hot Deals</h3>
+                <p>Discover amazing deals shared by our community members.</p>
+                <p><small>✨ <em>Share your own finds and help others save money!</em></small></p>
+              </div>
+            `,
+            position: 'left'
+          },
+          {
+            element: document.querySelector('.search-bar'),
+            intro: `
+              <div style="text-align: center;">
+                <h3 style="margin-bottom: 8px;">🔍 Smart Search</h3>
+                <p>Quickly find specific enquiries or deals using our powerful search feature.</p>
+                <p><small>🎯 <em>Search across both questions and replies!</em></small></p>
+              </div>
+            `,
+            position: 'bottom'
+          },
+          {
+            intro: `
+              <div style="text-align: center;">
+                <h3 style="margin-bottom: 10px; color: var(--success);">🎉 You're All Set!</h3>
+                <p>You're now ready to explore Customer's Connect and connect with our amazing community.</p>
+                <p style="margin-top: 15px;"><strong>Happy shopping and sharing! 🛍️</strong></p>
+              </div>
+            `
+          }
+        ],
+        showStepNumbers: true,
+        exitOnEsc: true,
+        exitOnOverlayClick: false,
+        nextLabel: 'Next →',
+        prevLabel: '← Back',
+        skipLabel: 'Skip Tour',
+        doneLabel: 'Finish',
+        tooltipClass: 'custom-introjs-tooltip',
+        highlightClass: 'custom-introjs-highlight'
+      }).start();
     });
 
   </script>
 </body>
 </html>
-
-
-
